@@ -1,16 +1,16 @@
 <template>
   <div
-    :id="_uid + 'selectComponent'"
+    :id="'selectComponent_' + _uid.toString()"
     :class="$style.wrapper"
     :style="{width:selectWidth}"
-    :selectedOptions="selectedOptions">
+    :selectedOptions="selectedOptions"
+    @mouseleave="hideRemoveIcon">
     <div :class="$style.inputArea">
       <div
         :class="$style.selectedArea"
-        @mouseover="showRemoveIcon('textArea')"
-        @mouseleave="hideRemoveIcon('textArea')">
+        @mouseover="showRemoveIcon('textArea')">
         <div
-          :id="_uid + 'selectedContainer'"
+          :id="'selectedContainer_' + _uid.toString()"
           :class="$style.selected"
           v-for="(selectedKey,selected_index) in Object.keys(selectedOptions).slice(0, 1)"
           :key="selected_index"
@@ -22,7 +22,7 @@
             }}
           </span>
           <span
-            :id="_uid + 'selectedTextHover'"
+            :id="'selectedTextHover_' + _uid.toString()"
             :class="$style.selected_text_hover">
             {{
               selectedOptions[selectedKey].label ? 
@@ -47,47 +47,54 @@
         </div>
       </div>
       <input
-        :id="_uid + '_textArea'"
+        :id="'textArea_' + _uid.toString()"
         :class="$style.textArea"
         :placeholder="Object.keys(selectedOptions).length>0?'':placeholder"
         @click="openDropdown"
         @mouseover="showRemoveIcon('textArea')"
-        @mouseleave="hideRemoveIcon('textArea')"
         v-model="inputText"/>
       <span
         :class="$style.removeIcon"
-        :id="_uid + '_removeIcon'"
+        :id="'removeIcon_' + _uid.toString()"
         class="fas fa-times-circle"
         style="display:none"
         @click="removeAll"
-        @mouseover="showRemoveIcon('removeIcon')"
-        @mouseleave="hideRemoveIcon('removeIcon')">
+        @mouseover="showRemoveIcon('removeIcon')">
       </span>
     </div>
     <div :class="$style.dropdown"
-      :id="_uid + '_dropdown'"
+      :id="'dropdown_' + _uid.toString()"
       :style="{
         width:selectWidth
       }">
       <div
-        :id="_uid + '_option_' + o_index.toString()"
+        :id="'option_' + _uid.toString() + '_' + o_index.toString()"
         v-for="(option,o_index) in options_show"
         :key="o_index"
         :class="$style.option"
         @click="selectFunction(option)">
         <div
-          :id="_uid + '_optionText_' + o_index.toString()"
-          :class="$style.optionText">
-          <span style="position:relative;top:3px">{{option.label ? option.label:option}}</span>
+          :id="'optionText_' + _uid.toString() + '_' + o_index.toString()"
+          :class="$style.optionText"
+          :style="option && option.disabled ? {color: '#828282', cursor: 'not-allowed'}:{}">
+          <span>{{option.label ? option.label:option}}</span>
         </div>
-        <div :class="$style.optionCheck">
-          <span
-            :id="_uid + '_checkIcon_' + o_index.toString()"
-            class="material-icons"
-            style="position:relative;top:3px;color: #3A72FF"
-            v-if="showCheckIcon(option) === true">done
-          </span>
+        <div :class="$style.optionCheck" v-if="showCheckIcon(option) === true">
+          <slot name="checkIcon">
+            <span
+              :id="'checkIcon_' + _uid.toString() + '_' + o_index.toString()"
+              class="fas fa-check-circle">
+            </span>
+          </slot>
         </div>
+      </div>
+      <div :class="$style.noOptions" v-if="options.length === 0">
+        <slot name="empty">
+          <div :class="$style.noDataIcon">
+            <span class="fas fa-folder-open"></span>
+          </div>
+          <span :class="$style.noDataText">No Data</span>
+        </slot>
       </div>
     </div>
   </div>
@@ -140,7 +147,7 @@ export default {
   mounted() {
     var self = this
     this.filterOptions()
-    var DOM = document.getElementById(this._uid + '_textArea')
+    var DOM = document.getElementById('textArea_' + this._uid.toString())
     DOM.addEventListener('keydown', function(evt) {
       if (self.selectedOptions.numOfSelected === 0) return
       if (evt.key === 'Backspace') {
@@ -150,7 +157,7 @@ export default {
     })
     this.clickEvent = function(evt) {
       const clickTarget = evt.target
-      const selectDOM = document.getElementById(self._uid + 'selectComponent')
+      const selectDOM = document.getElementById('selectComponent_' + self._uid.toString())
       if (selectDOM.contains(clickTarget) || clickTarget.id.split('_')[1] === 'checkIcon') {
         self.openDropdown()      
       }
@@ -162,25 +169,26 @@ export default {
   methods: {
     //-----------Visual control------------
     openDropdown() {
-      var DOM = document.getElementById(this._uid + '_dropdown')
+      var DOM = document.getElementById('dropdown_' + this._uid.toString())
       this.if_dropdown = true
       DOM.style.display = 'block'
       DOM.style.maxHeight = '200px'
     },
     closeDropdown() {
-      var DOM = document.getElementById(this._uid + '_dropdown')
+      var DOM = document.getElementById('dropdown_' + this._uid.toString())
       this.if_dropdown = false
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
     },
 
     showRemoveIcon(id) {
-      document.getElementById(this._uid + '_removeIcon').style.display = 'block'
-      if (id === 'removeIcon') document.getElementById(this._uid + '_removeIcon').style.color = '#9B9B9B'
-      else document.getElementById(this._uid + '_removeIcon').style.color = '#C6C6C6'
+      const DOM = document.getElementById('removeIcon_' + this._uid.toString())
+      DOM.style.display = 'block'
+      if (id === 'removeIcon') DOM.style.color = '#9B9B9B'
+      else DOM.style.color = '#C6C6C6'
     },
     hideRemoveIcon() {
-      document.getElementById(this._uid + '_removeIcon').style.display = 'none'
+      document.getElementById('removeIcon_' + this._uid.toString()).style.display = 'none'
     },
 
     showCheckIcon(option) {
@@ -189,13 +197,14 @@ export default {
     },
 
     selectedHover() {
-      const position = document.getElementById(this._uid + 'selectedContainer').getBoundingClientRect()
-      document.getElementById(this._uid + 'selectedTextHover').style.top = (position.y-25).toString() + 'px'
+      const position = document.getElementById('selectedContainer_' + this._uid.toString()).getBoundingClientRect()
+      document.getElementById('selectedTextHover_' + this._uid.toString()).style.top = (position.y-25).toString() + 'px'
     },
     //----------------------------------
     
     //-----------data control-----------
     selectFunction(option) {
+      if (option.disabled) return
       const key = option.prop ? option.prop:option
       if (this.selectedOptions[key] !== undefined) { //if already selected
         this.removeOne(option)
@@ -247,7 +256,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
+@import '@/styles/general.scss';
 .wrapper {
   @include block(100%);
   .inputArea {
@@ -267,7 +276,6 @@ export default {
         background-color: #f7f7f7;
         display: flex;
         .selected_text {
-          width: 50px;
           position:relative;
           overflow : hidden;
           text-overflow: ellipsis;
@@ -276,10 +284,7 @@ export default {
           padding-right:5px;
         }
         .selected_remove {
-          @include block(20px);
-          position:relative;
-          right:-2px;
-          top:5px;
+          padding: 4px;
           color: rgb(173, 173, 173);
           cursor: pointer;
         }
@@ -342,18 +347,33 @@ export default {
       cursor: pointer;
       .optionText {
         @include block(90%);
-        padding-left:10px;
+        margin-left: 10px;
+        padding: 5px;
         font-size:16px;
       }
       .optionCheck {
-        font-size:10px;
-      }
-      .optionCheck:hover {
-        color: rgb(59, 59, 59);
+        font-size:15px;
+        padding: 4px;
+        color: #3A72FF
       }
     }
     .option:hover {
       background-color: #eaf4ff;
+    }
+    .noOptions {
+      @include block(100%);
+      overflow: hidden;
+      padding: 5px 0px;
+      text-align: center;
+      .noDataIcon {
+        font-size:30px;
+        color: rgb(148, 148, 148);
+      }
+      .noDataText {
+        padding-left:10px;
+        font-size:16px;
+        color: rgb(148, 148, 148);
+      }
     }
   }
 }

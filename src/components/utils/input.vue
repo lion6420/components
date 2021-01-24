@@ -1,10 +1,23 @@
 <template>
-  <input
-    :class="$style.inputStyle"
-    :placeholder="placeholder"
-    :value="value"
-    :style="{width: width}"
-    @input="$emit('input', $event.target.value)" />
+  <div
+    :class="$style.inputWrapper"
+    :style="{
+      width: width,
+      border: border,
+      'font-color': fontColor
+    }">
+    <div :class="$style.addonBefore">
+      <slot name="addonBefore"></slot>
+    </div>
+    <input
+      :class="$style.inputStyle"
+      :placeholder="placeholder"
+      :value="value"
+      @input="$emit('input', $event.target.value)" />
+      <div :class="$style.addonAfter">
+        <slot name="addonAfter"></slot>
+      </div>
+  </div>
 </template>
 
 <script>
@@ -27,22 +40,56 @@ export default {
       default() {
         return ''
       }
+    },
+    addonBefore: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    addonAfter: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    border: {
+      type: String,
+      require: false,
+    },
+    fontColor: {
+      type: String,
+      require: false
     }
   },
 }
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
-.inputStyle {
-  @include block(100%, 30px, $radius: 5px);
-  outline: none;
-  border: 1px solid #a7a7a7;
-  text-align: center;
+@import '@/styles/general.scss';
+.inputWrapper {
+  display: flex;
+  font-size: 15px;
+  border: 1px solid #c2c2c2;
+  border-radius: 3px;
+  .addonBefore {
+    padding:4px;
+  }
+  .inputStyle {
+    @include block(100%, 30px, $radius:3px);
+    outline: none;
+    border:none;
+    font-size: 15px;
+  }
+  .addonAfter {
+    padding:4px;
+  }
 }
-.inputStyle:focus-within {
-  border: 1px solid #6294f1;
-  box-shadow: 0px 0px 5px #739ce9;
-}
+.inputWrapper:focus-within {
+    border: 1px solid #6294f1;
+    box-shadow: 0px 0px 5px #739ce9;
+  }
 
 </style>

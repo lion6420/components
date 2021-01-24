@@ -7,44 +7,39 @@
     <thead id="tableHeadWrapper" v-if="header">
       <tr v-for="(lv,lv_index) in headerLevel" :key="lv_index">
         <th
-          :colspan="spanMethod_header?spanMethod_header(lv_index, index).colspan:getHeaderColSpan(header, 1)"
-          :rowspan="spanMethod_header?spanMethod_header(lv_index, index).rowspan:header.children?1:(headerLevel-lv+1)" :id="'tableHead' + lv" :class="$style.tableHead" 
-          v-for="(header,index) in columnsToRender(lv)" :key="index"
+          :colspan="spanMethod_header ? spanMethod_header(lv_index, h_index).colspan:getHeaderColSpan(header)"
+          :rowspan="spanMethod_header ? spanMethod_header(lv_index, h_index).rowspan:(header.children ? 1:(headerLevel-lv+1))" :id="'tableHead' + lv" :class="$style.tableHead" 
+          v-for="(header,h_index) in columnsToRender(lv)" :key="h_index"
           :style="[
             tableHeaderStyle(lv, header),
             {
-              height: headerHeight + 'px',
-              display: spanMethod_header?spanMethod_header(lv_index, index).rowspan === 0?'none':'default':'',
-              color : headerColor?headerColor:'',
-              'font-size': headerFontSize
+              display: spanMethod_header?spanMethod_header(lv_index, h_index).rowspan === 0?'none':'default':'',
             }]">
           <slot name="header" :header="header">{{header.label}}</slot>
         </th>
       </tr>
     </thead>
-    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:1" :key="g_index">
-      <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:data.length)" :key="r_index" 
-        class="tableRow" :class="$style.tableRow" @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):r_index)">
+    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:data.length" :key="g_index">
+      <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1))" :key="r_index" 
+        :class="$style.tableRow"
+        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)">
         <td v-for="(header,h_index) in propList" :key="h_index"
-          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1), r_index, h_index, header, each_data).rowspan"
-          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1), r_index, h_index, header, each_data).colspan"
+          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan"
+          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).colspan"
           :style="[{
-            width: header.width,
-            'min-width': header.minWidth,
             'border-left': showBorder(h_index),
             'border-top': '1px #d3d3d3 solid',
-            'font-family': header.textStyle,
-            'font-weight': header.textWeight,
-            'font-size': header.textSize,
-            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1), r_index, h_index, header, each_data).rowspan === 0?'none':'default',
-            'background-color': backgroundColor?backgroundColor(header.prop, each_data[header.prop]):bodyStriped(r_index)}, header.style, if_sticky(header)]">
+            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan === 0?'none':'default',
+            'background-color': backgroundColor?backgroundColor(header.prop, each_data[header.prop]):bodyStriped(r_index)},
+            header.style,
+            if_sticky(header)]">
           <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
         </td>
       </tr>
       <tr>
         <td v-if="rowToggled" :colspan="columns.length" style="padding:0px;cursor: default;">
           <div class="rowDetail" :class="$style.rowDetail">
-            <slot name="rowToggle"></slot>
+            <slot name="rowToggle" :index="g_index"></slot>
           </div>
         </td>
       </tr>
@@ -146,7 +141,7 @@ export default {
       type: String,
       require: false,
       default() {
-        return '#000'
+        return '#3F3F3F'
       }
     },
     spanMethod: {
@@ -193,13 +188,13 @@ export default {
 
       headerLevel: 1,
       lastToggled: null,
-      headerHeight: 37,
+      headerHeight: 30,
     }
   },
   created() {
     //multi-headerLevel
     this.headerLevel = this.getHeaderlevel() //計算表頭有多少level
-    this.getPropList()
+    this.getPropList() //處理多級表頭props問題
   },
   methods: {
     //table style
@@ -219,13 +214,14 @@ export default {
       return style
     },
     showBorder(h_index) {
-      if (h_index === 0) return 'none'
+      if (h_index === 0) return 'none' //最左邊不顯示border
       else if (this.bordered === false) return 'none'
       else return '1px #d3d3d3 solid'
     },
     tableHeaderStyle(header_level, header) {
       var style = {
         'background-color': this.headerBackgoundColor,
+        'font-size': this.headerFontSize,
         color: this.headerColor,
         height: this.headerHeight,
         'z-index': 1,
@@ -420,7 +416,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '../../style/general.module.scss';
+@import '@/styles/general.scss';
 
 .tableContainer {
   @include block(100%);
@@ -436,6 +432,7 @@ export default {
       th {
         font-weight: bold;
         padding: 8px;
+        text-align: left;
       }
     }
     .tableRow {

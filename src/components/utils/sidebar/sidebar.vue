@@ -14,7 +14,7 @@ export default {
       type: String,
       require: false,
       default() {
-        return '160px'
+        return '200px'
       }
     },
     menu: {
@@ -54,9 +54,9 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
+@import '@/styles/general.scss';
 .sidebar {
-  @include block(100%, $background-color: $sidebar-background-color);
+  @include block(100%);
   position: fixed;
   top: 0px;
   left: 0px;
@@ -66,7 +66,7 @@ export default {
 }
 @media screen and (max-width: 700px) {
   .sidebar {
-    @include block(100%, $background-color: $sidebar-background-color);
+    @include block(100%);
     max-width: 0px;
     position: fixed;
     top: 0px;

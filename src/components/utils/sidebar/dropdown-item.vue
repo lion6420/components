@@ -124,7 +124,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
+@import '@/styles/general.scss';
 .wrapper {
   overflow: hidden;
   .baseBtn {
