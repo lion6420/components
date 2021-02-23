@@ -1,7 +1,12 @@
 <template>
-  <div :class="$style.sidebar" :style="{width: width}" :id="'sidebar_' + _uid.toString()">
-    <div v-for="(item, i_index) in menu" :key="i_index" :style="{'margin-top' : i_index === 0 ? '60px': '0px'}">
-      <sidebar-item :root="item" :showSidebar="showSidebar"></sidebar-item>
+  <div
+    :class="$style.sidebar"
+    :id="'sidebar_' + _uid.toString()"
+    :style="{
+      width: width,
+    }">
+    <div v-for="(item, i_index) in menu" :key="i_index" :style="{'margin-top' : i_index === 0 ? '0px': '0px'}">
+      <sidebar-item :root="item" :showSidebar="showSidebar" :theme="theme" :width="width"></sidebar-item>
     </div>
   </div>
 </template>
@@ -30,14 +35,36 @@ export default {
       default() {
         return false
       }
-    }
+    },
+    theme: {
+      type: String,
+      require: false,
+      default() {
+        return 'light'
+      }
+    },
   },
   components: {
     sidebarItem,
   },
   data() {
     return {
+
     }
+  },
+  mounted() {
+    this.initTheme()
+  },
+  methods: {
+    initTheme() {
+      let htmlElement = document.getElementById('sidebar_' + this._uid.toString())
+      if (this.theme === 'dark') {
+        htmlElement.setAttribute('sidebar-theme', 'dark')
+      }
+      else {
+        htmlElement.setAttribute('sidebar-theme', 'light')
+      }
+    },
   },
   watch: {
     showSidebar() {

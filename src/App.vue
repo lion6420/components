@@ -13,14 +13,19 @@
         </t-input>
       </div>
       <div :class="$style.header_right">
-        <img width="30px" height="30px" src="/github.png" style="margin-top:2px;" />
+        <a href="https://github.com/lion6420/components_base" target="blank"><img width="30px" height="30px" src="/github.png" style="margin-top:2px;" /></a>
+      </div>
+      <div :class="$style.header_right" :style="{'border-bottom': active === 'about' ? '3px #1462D1 solid': 'none'}">
+        <router-link to="/about" :class="$style.router_link">About</router-link>
       </div>
       <div :class="$style.header_right">測試</div>
-      <div :class="$style.header_right" :style="{'border-bottom': active === 'doc' ? '3px #1462D1 solid': 'none'}">組件</div>
+      <div :class="$style.header_right" :style="{'border-bottom': active === 'doc' ? '3px #1462D1 solid': 'none'}">
+        <router-link to="/doc/table" :class="$style.router_link">組件</router-link>
+      </div>
     </div>
     <div :class="$style.body">
       <div :class="$style.sidebar">
-        <sidebar :menu="menu"></sidebar>
+        <sidebar :menu="menu" style="margin-top:60px" width="220px"></sidebar>
       </div>
       <div :class="$style.content">
         <router-view></router-view>
@@ -61,6 +66,10 @@ export default {
           label: 'Multi select 多選框',
           link: '/doc/multi-select',
         },
+        {
+          label: 'Sidebar 側邊欄',
+          link: '/doc/sidebar',
+        },
       ]
     }
   },
@@ -71,8 +80,12 @@ export default {
     activeCheck() {
       const path = window.location.pathname
       const regex_doc = new RegExp('/doc')
+      const regex_about = new RegExp('/about')
       if (regex_doc.test(path)) {
         this.active = 'doc'
+      }
+      else if (regex_about.test(path)) {
+        this.active = 'about'
       }
     },
   },
@@ -92,7 +105,7 @@ export default {
     background-color: $color-white;
     position: fixed;
     top:0px;
-    z-index: 1;
+    z-index: 5;
     margin-bottom: 5px;
     box-shadow: 0 3px 2px -2px #dfdfdf;
     .header_left {
@@ -110,13 +123,17 @@ export default {
       margin-right: 20px;
       padding: 12px 2px;
       cursor: pointer;
+      .router_link {
+        text-decoration: none;
+        color: #000;
+      }
     }
   }
   .body {
     display: flex;
     margin-top:60px;
     .sidebar {
-      @include block(200px);
+      @include block(220px);
       background-color: $color-white;
       position: fixed;
       left: 0px;

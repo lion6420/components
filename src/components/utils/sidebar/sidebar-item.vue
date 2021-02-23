@@ -13,16 +13,13 @@
     </div>
     <div v-else-if="root.type === 'dropdown'">
       <dropdown-item :showSidebar="showSidebar" :label="root.label" :icon="root.icon" :expandList="root.children" :itemStyle="root.style"
-        :activePath="root.activePath?root.activePath:''">
-        <sidebar-item
-          v-for="(child, child_index) in root.children"
-          :key="child_index"
-          :root="child">
-        </sidebar-item>
+        :theme="theme">
       </dropdown-item>
     </div>
     <div v-else>
-      <single-item :showSidebar="showSidebar" :label="root.label" :icon="root.icon" :itemStyle="root.style" :link="root.link"></single-item>
+      <single-item :showSidebar="showSidebar" :label="root.label" :icon="root.icon" :itemStyle="root.style" :link="root.link"
+        :theme="theme">
+      </single-item>
     </div>
   </div>
 </template>
@@ -50,12 +47,20 @@ export default {
       default() {
         return false
       }
+    },
+    theme: {
+      type: String,
+      require: false,
     }
   },
   data() {
     return {
       active: false,
     }
+  },
+  created() {
+  },
+  methods: {
   },
   watch: {
     showSidebar() {

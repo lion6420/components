@@ -4,12 +4,19 @@ import DocTable from '@/components/table/doc-table'
 import DocInput from '@/components/input/doc-input'
 import DocSingleSelect from '@/components/single-select/doc-single-select'
 import DocMultiSelect from '@/components/multi-select/doc-multi-select'
+import DocSidebar from '@/components/sidebar/doc-sidebar'
+import About from '@/components/about'
 
 
 const routes = [
   {
     path: '/',
     redirect: '/doc/table'
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About,
   },
   {
     path: '/doc/table',
@@ -30,6 +37,11 @@ const routes = [
     path: '/doc/multi-select',
     name: 'multi-select',
     component: DocMultiSelect,
+  },
+  {
+    path: '/doc/sidebar',
+    name: 'sidebar',
+    component: DocSidebar
   }
 ]
 

@@ -21,14 +21,17 @@
     </thead>
     <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:data.length" :key="g_index">
       <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1))" :key="r_index" 
+        :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):g_index).toString()"
         :class="$style.tableRow"
-        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)">
+        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)"
+        @mouseover="hoverEffect(tbodyGroup?groupIndexTranslation(g_index):g_index, 'on')"
+        @mouseleave="hoverEffect(tbodyGroup?groupIndexTranslation(g_index):g_index, 'off')">
         <td v-for="(header,h_index) in propList" :key="h_index"
           :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan"
           :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).colspan"
           :style="[{
             'border-left': showBorder(h_index),
-            'border-top': '1px #d3d3d3 solid',
+            'border-top': '1px ' + borderColor + ' solid',
             'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan === 0?'none':'default',
             'background-color': backgroundColor?backgroundColor(header.prop, each_data[header.prop]):bodyStriped(r_index)},
             header.style,
@@ -91,11 +94,25 @@ export default {
         return false
       }
     },
+    rowHover: {
+      type: Boolean,
+      require: false,
+      default() {
+        return true
+      }
+    },
     borderAround: {
       type: Boolean,
       require: false,
       default() {
         return true
+      }
+    },
+    borderColor: {
+      type: String,
+      require: false,
+      default() {
+        return '#d3d3d3'
       }
     },
     header: {
@@ -130,7 +147,7 @@ export default {
         return false
       }
     },
-    headerBackgoundColor: {
+    headerBackgroundColor: {
       type: String,
       require: false,
       default() {
@@ -142,6 +159,13 @@ export default {
       require: false,
       default() {
         return '#3F3F3F'
+      }
+    },
+    headerTextAlign: {
+      type: String,
+      require: false,
+      default() {
+        return 'default'
       }
     },
     spanMethod: {
@@ -201,7 +225,7 @@ export default {
     tableWrapperStyle() {
       var style = {overflowX:'auto'}
       if (this.borderAround) {
-        style['border'] = '1px  #d3d3d3 solid'
+        style['border'] = '1px  ' + this.borderColor + ' solid'
       }
       if (this.height !== '') {
         style['height'] = this.height
@@ -216,17 +240,18 @@ export default {
     showBorder(h_index) {
       if (h_index === 0) return 'none' //最左邊不顯示border
       else if (this.bordered === false) return 'none'
-      else return '1px #d3d3d3 solid'
+      else return '1px  ' + this.borderColor + ' solid'
     },
     tableHeaderStyle(header_level, header) {
       var style = {
-        'background-color': this.headerBackgoundColor,
+        'background-color': this.headerBackgroundColor,
         'font-size': this.headerFontSize,
         color: this.headerColor,
         height: this.headerHeight,
         'z-index': 1,
         'border-left': this.showBorder(),
         'border-top': header_level!==1 ? this.showBorder(): '',
+        'text-align': this.headerTextAlign,
       }
       if (this.height !== '' || this.maxHeight !== '') {
         style['position'] = 'sticky'
@@ -266,6 +291,14 @@ export default {
         }
       }
     },
+    hoverEffect(index, type) {
+      var DOM = document.getElementById('tableRow_' + this._uid.toString() + '_' + index.toString())
+      if (this.rowHover) {
+        if (type === 'on') DOM.style.backgroundColor = '#eaf4ff'
+        else DOM.style.backgroundColor = ''
+      }
+      else return
+    },
 
     //table toggle
     toggleRow(group_index, row_index) {
@@ -292,7 +325,7 @@ export default {
           return
         }
         for (var i=0; i<header.children.length; i++) {
-          dfs(header.children[i], currentLv++)
+          dfs(header.children[i], ++currentLv)
         }
       }
       for (var i=0; i<this.columns.length; i++) {
@@ -434,12 +467,6 @@ export default {
         padding: 8px;
         text-align: left;
       }
-    }
-    .tableRow {
-      cursor:pointer;
-    }
-    .tableRow:hover {
-      background-color: #eaf4ff;
     }
     .rowDetail {
       display: none;
