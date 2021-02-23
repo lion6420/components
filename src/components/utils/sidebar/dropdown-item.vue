@@ -17,19 +17,18 @@
         :class="$style.expandBtn"
         v-for="(expandElement, exp_index) in expandList"
         :key="exp_index">
-        <div :class="$style.activebar"></div>
-        <router-link :to="expandElement.link ? expandElement.link : ''" :class="$style.btn" :id="'item-btn_' + _uid.toString()"
-          :style="[itemStyle, {height: height.toString() + 'px'}]">
-          <span :class="[$style.baseBtn_icon, expandElement.icon ? expandElement.icon.class: {}]">{{expandElement.icon ? expandElement.icon.label : ''}}</span>
-          <div :class="$style.btn_label"><span style="position:relative; top:12px">{{expandElement.label}}</span></div>
-        </router-link>
+        <dropdown-single-item :theme="theme" :icon="expandElement.icon" :label="expandElement.label" :link="expandElement.link"></dropdown-single-item>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import dropdownSingleItem from './dropdown-single-item'
 export default {
+  components: {
+    dropdownSingleItem,
+  },
   props: {
     expandList: {
       type: Array,
@@ -92,7 +91,7 @@ export default {
     if (this.itemStyle.height && typeof(this.itemStyle.height) === 'number') this.height = this.itemStyle.height
   },
   mounted() {
-    this.testActive()
+    this.activeCheck()
   },
   methods: {
     operateItem() {
@@ -109,12 +108,16 @@ export default {
       this.if_expand = false
       DOM.style.maxHeight = '0px'
     },
-    testActive() {
-      if (this.activePath === '') return
+    activeCheck() {
       const path = window.location.pathname
-      const urlPattern = new RegExp(this.activePath)
-      this.active = urlPattern.test(path)
-    }
+      let htmlElement = document.getElementById('dropdown-item_' + this._uid.toString())
+      if (path === this.link) {
+        htmlElement.setAttribute('sidebar-active', 'active')
+      }
+      else {
+        htmlElement.setAttribute('sidebar-active', 'inactive')
+      }
+    },
   },
   watch: {
     showSidebar() {
@@ -125,6 +128,9 @@ export default {
       else {
         DOM.style.maxWidth = '0px'
       }
+    },
+    "$route.path": function() {
+      this.activeCheck()
     }
   }
 }
@@ -171,27 +177,8 @@ export default {
     overflow: hidden;
     max-height: 0px;
     transition: max-height 0.1s linear;
-    .btn {
-      @include block(100%);
+    .expandBtn {
       display: flex;
-      font-size: 16px;
-      text-decoration: none;
-      color: var(--sidebar-text-color);
-      font-weight: var(--sidebar-text-weight);
-      background-color: var(--sidebar-dropdown-bg-color);
-      .baseBtn_icon {
-        position:relative;
-        margin-left: 12px;
-        top: 15px;
-        padding:0px 8px;
-      }
-      .btn_label {
-        @include block(100%);
-      }
-    }
-    .btn:hover {
-      background-color: var(--sidebar-bg-color-hover);
-      color: var(--sidebar-text-color-hover);
     }
   }
 }

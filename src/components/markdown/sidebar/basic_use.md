@@ -24,10 +24,11 @@ export default {
           },
           children: [
             {
-              label: 'OptionA-1',
+              label: 'Sidebar 側邊欄',
               icon: {
                 class: 'fas fa-edit'
               },
+              link: '/doc/sidebar'
             },
             {
               label: 'OptionA-2',
