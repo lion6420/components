@@ -17,13 +17,43 @@ export default {
     return {
       menu: [
         {
+          type: 'dropdown',
           label: 'OptionA',
+          icon: {
+            class: 'fas fa-user'
+          },
+          children: [
+            {
+              label: 'OptionA-1',
+              icon: {
+                class: 'fas fa-edit'
+              },
+            },
+            {
+              label: 'OptionA-2',
+              icon: {
+                class: 'fas fa-keyboard'
+              },
+            },
+            {
+              label: 'OptionA-3',
+              icon: {
+                class: 'fas fa-tasks'
+              },
+            },
+          ]
         },
         {
           label: 'OptionB',
+          icon: {
+            class: 'fas fa-wrench'
+          }
         },
         {
           label: 'OptionC',
+          icon: {
+            class: 'fas fa-paper-plane'
+          }
         },
         {
           label: 'Sidebar 側邊欄',
