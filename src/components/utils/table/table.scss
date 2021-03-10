@@ -1,0 +1,8 @@
+// hover color
+:root {
+  --table-hover-color: #eaf4ff;
+}
+
+[hover-effect="off"] {
+  --table-hover-color: '';
+}

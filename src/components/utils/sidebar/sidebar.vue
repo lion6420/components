@@ -81,7 +81,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import '../common/general.scss';
 .sidebar {
   @include block(100%);
   position: fixed;

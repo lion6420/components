@@ -3,7 +3,7 @@
 >
 > 組件允許對table row進行分組，group_index表示組別 (若無設定分組，默認和row_index相同)，group_size表示該組別row數 (若無設定分組, 默認為1)
 >
-> row_index表示實際row位置
+> row_index表示組內row位置
 ```vue
 <template>
   <t-table :data="tableData" :columns="headers" :spanMethod="spanMethod">

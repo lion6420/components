@@ -1,10 +1,10 @@
 <template>
 <div>
-  <div class="tableContainer" :class="$style.tableContainer" 
+  <div class="tableContainer" :id="'tableContainer_' + _uid.toString()" :class="$style.tableContainer" 
     :style="tableWrapperStyle()"
   >
   <table>
-    <thead id="tableHeadWrapper" v-if="header">
+    <thead :id="'tableHeadWrapper_' + _uid.toString()" v-if="header">
       <tr v-for="(lv,lv_index) in headerLevel" :key="lv_index">
         <th
           :colspan="spanMethod_header ? spanMethod_header(lv_index, h_index).colspan:getHeaderColSpan(header)"
@@ -23,16 +23,14 @@
       <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1))" :key="r_index" 
         :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):g_index).toString()"
         :class="$style.tableRow"
-        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)"
-        @mouseover="hoverEffect(tbodyGroup?groupIndexTranslation(g_index):g_index, 'on')"
-        @mouseleave="hoverEffect(tbodyGroup?groupIndexTranslation(g_index):g_index, 'off')">
+        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)">
         <td v-for="(header,h_index) in propList" :key="h_index"
-          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan"
-          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).colspan"
+          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan"
+          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).colspan"
           :style="[{
             'border-left': showBorder(h_index),
             'border-top': '1px ' + borderColor + ' solid',
-            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?groupIndexTranslation(g_index):g_index, h_index, header, each_data).rowspan === 0?'none':'default',
+            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan === 0?'none':'default',
             'background-color': backgroundColor?backgroundColor(header.prop, each_data[header.prop]):bodyStriped(r_index)},
             header.style,
             if_sticky(header)]">
@@ -168,6 +166,13 @@ export default {
         return 'default'
       }
     },
+    headerPadding: {
+      type: String,
+      require: false,
+      default() {
+        return '8px'
+      }
+    },
     spanMethod: {
       type: Function,
       require: false,
@@ -220,7 +225,19 @@ export default {
     this.headerLevel = this.getHeaderlevel() //計算表頭有多少level
     this.getPropList() //處理多級表頭props問題
   },
+  mounted() {
+    this.initTheme()
+  },
   methods: {
+    initTheme() {
+      let DOMElement = document.getElementById('tableContainer_' + this._uid.toString())
+      if (!this.rowHover) {
+        DOMElement.setAttribute('hover-effect', 'off')
+      }
+      else {
+        DOMElement.setAttribute('hover-effect', 'on')
+      }
+    },
     //table style
     tableWrapperStyle() {
       var style = {overflowX:'auto'}
@@ -252,6 +269,7 @@ export default {
         'border-left': this.showBorder(),
         'border-top': header_level!==1 ? this.showBorder(): '',
         'text-align': this.headerTextAlign,
+        padding: this.headerPadding,
       }
       if (this.height !== '' || this.maxHeight !== '') {
         style['position'] = 'sticky'
@@ -290,14 +308,6 @@ export default {
           'clip-path': 'inset(0px -15px 0px 0px)'
         }
       }
-    },
-    hoverEffect(index, type) {
-      var DOM = document.getElementById('tableRow_' + this._uid.toString() + '_' + index.toString())
-      if (this.rowHover) {
-        if (type === 'on') DOM.style.backgroundColor = '#eaf4ff'
-        else DOM.style.backgroundColor = ''
-      }
-      else return
     },
 
     //table toggle
@@ -449,7 +459,8 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import '../common/general.scss';
+@import './table.scss';
 
 .tableContainer {
   @include block(100%);
@@ -464,9 +475,11 @@ export default {
       }
       th {
         font-weight: bold;
-        padding: 8px;
         text-align: left;
       }
+    }
+    .tableRow:hover {
+      background-color: var(--table-hover-color);
     }
     .rowDetail {
       display: none;

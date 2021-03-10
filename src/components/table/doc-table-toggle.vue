@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import tTable from '@/components/utils/table'
+import tTable from '@/components/utils/table/table'
 export default {
   components: {
     tTable,

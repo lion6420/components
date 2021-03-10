@@ -92,8 +92,8 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
-@import './styles/sidebar-style.scss';
+@import '../common/general.scss';
+@import './sidebar-style.scss';
 .wrapper {
   @include block(100%);
   display: flex;

@@ -154,7 +154,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import '../common/general.scss';
 .wrapper {
   overflow: hidden;
   @include block(100%);

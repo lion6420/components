@@ -19,7 +19,7 @@
         <span class="fas fa-times-circle" @mouseover="showRemoveIcon('removeIcon')" @click="removeFunction"></span>
       </div>
     </div>
-    <div :class="$style.optionsArea" :id="'optionsArea_' + _uid.toString()" :style="{width:width}">
+    <div :class="$style.optionsArea" :id="'optionsArea_' + _uid.toString()" :style="{width:width, left: startPositionX + 'px', top: startPositionY + 'px'}">
       <div :class="$style.option" v-for="(option,o_index) in options" :key="o_index" @click="selectFunction(option)"
         :style="option && option.disabled ? {color: '#828282', cursor: 'not-allowed'}:{}">
         <span :class="$style.optionText">{{option.label ? option.label:option}}</span>
@@ -78,17 +78,25 @@ export default {
       else self.closeOptionsArea()
     }
     document.addEventListener('click', this.clickEvent)
+    document.addEventListener('scroll', this.getOptionAreaPosition, true)
+    window.addEventListener('resize', this.getOptionAreaPosition)
   },
   methods: {
     openOptionsArea() {
       var DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'block'
       DOM.style.maxHeight = '200px'
+      this.getOptionAreaPosition()
     },
     closeOptionsArea() {
       var DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
+    },
+    getOptionAreaPosition() {
+      let DOM = document.getElementById('inputArea_' + this._uid.toString())
+      this.startPositionX = DOM.getBoundingClientRect().left
+      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 30
     },
     showRemoveIcon(id) {
       const DOM = document.getElementById('removeIcon_' + this._uid.toString())
@@ -110,14 +118,15 @@ export default {
   },
   destroyed() {
     document.removeEventListener('click', this.clickEvent)
+    document.removeEventListener('scroll', this.closeOptionsArea)
+    window.removeEventListener('resize', this.openOptionsArea)
   }
 }
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import './common/general.scss';
 .singleSelect {
-  position:relative;
   .inputArea {
     @include block(100%, $radius: 3px);
     display: flex;

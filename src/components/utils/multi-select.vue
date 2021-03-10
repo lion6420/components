@@ -5,7 +5,7 @@
     :style="{width:selectWidth}"
     :selectedOptions="selectedOptions"
     @mouseleave="hideRemoveIcon">
-    <div :class="$style.inputArea">
+    <div :class="$style.inputArea" :id="'inputArea_' + _uid.toString()">
       <div
         :class="$style.selectedArea"
         @mouseover="showRemoveIcon('textArea')">
@@ -65,7 +65,9 @@
     <div :class="$style.dropdown"
       :id="'dropdown_' + _uid.toString()"
       :style="{
-        width:selectWidth
+        width:selectWidth,
+        left: startPositionX + 'px',
+        top: startPositionY + 'px',
       }">
       <div
         :id="'option_' + _uid.toString() + '_' + o_index.toString()"
@@ -140,8 +142,9 @@ export default {
     return {
       inputText: '',
       options_show: [],
-      if_dropdown: false,
       clickEvent: null,
+      startPositionX: 0,
+      startPositionY: 0,
     }
   },
   mounted() {
@@ -164,21 +167,27 @@ export default {
       else self.closeDropdown()
     }
     document.addEventListener('click', this.clickEvent)
+    document.addEventListener('scroll', this.getOptionAreaPosition, true)
+    window.addEventListener('resize', this.getOptionAreaPosition)
   },
 
   methods: {
     //-----------Visual control------------
     openDropdown() {
       var DOM = document.getElementById('dropdown_' + this._uid.toString())
-      this.if_dropdown = true
       DOM.style.display = 'block'
       DOM.style.maxHeight = '200px'
+      this.getOptionAreaPosition()
     },
     closeDropdown() {
       var DOM = document.getElementById('dropdown_' + this._uid.toString())
-      this.if_dropdown = false
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
+    },
+    getOptionAreaPosition() {
+      let DOM = document.getElementById('inputArea_' + this._uid.toString())
+      this.startPositionX = DOM.getBoundingClientRect().left
+      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 34
     },
 
     showRemoveIcon(id) {
@@ -251,12 +260,14 @@ export default {
   },
   beforeDestroy() {
     document.removeEventListener('click', this.clickEvent)
+    document.removeEventListener('scroll', this.getOptionAreaPosition, true)
+    window.removeEventListener('resize', this.getOptionAreaPosition)
   }
 }
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import './common/general.scss';
 .wrapper {
   @include block(100%);
   .inputArea {

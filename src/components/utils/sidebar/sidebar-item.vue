@@ -77,6 +77,6 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import '../common/general.scss';
 
 </style>

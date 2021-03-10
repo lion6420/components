@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '../../style/general.module.scss';
+@import './common/general.scss';
 .footer {
   @include block(100%, $height:45px, $background-color: #000);
   text-align: center;

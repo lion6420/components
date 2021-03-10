@@ -68,7 +68,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import './common/general.scss';
 .inputWrapper {
   display: flex;
   font-size: 15px;
@@ -76,15 +76,17 @@ export default {
   border-radius: 3px;
   .addonBefore {
     padding:4px;
+    background-color: #fff;
   }
   .inputStyle {
-    @include block(100%, 30px, $radius:3px);
+    @include block(100%, 30px);
     outline: none;
     border:none;
     font-size: 15px;
   }
   .addonAfter {
     padding:4px;
+    background-color: #fff;
   }
 }
 .inputWrapper:focus-within {

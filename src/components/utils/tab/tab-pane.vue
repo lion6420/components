@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
+@import '../common/general.scss';
 .tabPane {
   @include block(100%);
 }

@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style lang="scss" module>
-@import '@/style/general.module.scss';
+@import '../common/general.scss';
 .mobileFooter {
   @include block(100%, 45px);
   display: flex;
