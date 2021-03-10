@@ -187,7 +187,7 @@ export default {
     getOptionAreaPosition() {
       let DOM = document.getElementById('inputArea_' + this._uid.toString())
       this.startPositionX = DOM.getBoundingClientRect().left
-      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 34
+      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 35
     },
 
     showRemoveIcon(id) {
@@ -258,7 +258,7 @@ export default {
       this.filterOptions()
     },
   },
-  beforeDestroy() {
+  destroyed() {
     document.removeEventListener('click', this.clickEvent)
     document.removeEventListener('scroll', this.getOptionAreaPosition, true)
     window.removeEventListener('resize', this.getOptionAreaPosition)

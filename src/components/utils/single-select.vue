@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.singleSelect" :style="{width:width}">
-    <div :class="$style.inputArea" @mouseleave="hideRemoveIcon">
+    <div :class="$style.inputWrapper" @mouseleave="hideRemoveIcon" :id="'inputWrapper_' + _uid.toString()">
       <div :class="$style.addonBefore">
         <slot name="addonBefore"></slot>
       </div>
@@ -68,6 +68,12 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      startPositionX: 0,
+      startPositionY: 0,
+    }
+  },
   mounted() {
     var self = this
     this.clickEvent = function(evt) {
@@ -83,20 +89,20 @@ export default {
   },
   methods: {
     openOptionsArea() {
-      var DOM = document.getElementById('optionsArea_' + this._uid.toString())
+      let DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'block'
       DOM.style.maxHeight = '200px'
       this.getOptionAreaPosition()
     },
     closeOptionsArea() {
-      var DOM = document.getElementById('optionsArea_' + this._uid.toString())
+      let DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
     },
     getOptionAreaPosition() {
-      let DOM = document.getElementById('inputArea_' + this._uid.toString())
+      let DOM = document.getElementById('inputWrapper_' + this._uid.toString())
       this.startPositionX = DOM.getBoundingClientRect().left
-      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 30
+      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 35
     },
     showRemoveIcon(id) {
       const DOM = document.getElementById('removeIcon_' + this._uid.toString())
@@ -118,8 +124,8 @@ export default {
   },
   destroyed() {
     document.removeEventListener('click', this.clickEvent)
-    document.removeEventListener('scroll', this.closeOptionsArea)
-    window.removeEventListener('resize', this.openOptionsArea)
+    document.removeEventListener('scroll', this.getOptionAreaPosition, true)
+    window.removeEventListener('resize', this.getOptionAreaPosition)
   }
 }
 </script>
@@ -127,7 +133,7 @@ export default {
 <style lang="scss" module>
 @import './common/general.scss';
 .singleSelect {
-  .inputArea {
+  .inputWrapper {
     @include block(100%, $radius: 3px);
     display: flex;
     border: 1px solid #a7a7a7;
