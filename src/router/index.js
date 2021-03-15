@@ -5,6 +5,7 @@ import DocInput from '@/components/input/doc-input'
 import DocSingleSelect from '@/components/single-select/doc-single-select'
 import DocMultiSelect from '@/components/multi-select/doc-multi-select'
 import DocSidebar from '@/components/sidebar/doc-sidebar'
+import DocTab from '@/components/tab/doc-tab'
 import About from '@/components/about'
 
 
@@ -41,7 +42,12 @@ const routes = [
   {
     path: '/doc/sidebar',
     name: 'sidebar',
-    component: DocSidebar
+    component: DocSidebar,
+  },
+  {
+    path: '/doc/tab',
+    name: 'tab',
+    component: DocTab,
   }
 ]
 

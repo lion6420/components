@@ -70,6 +70,10 @@ export default {
           label: 'Sidebar 側邊欄',
           link: '/doc/sidebar',
         },
+        {
+          label: 'Tab 標籤頁',
+          link: '/doc/tab',
+        }
       ]
     }
   },

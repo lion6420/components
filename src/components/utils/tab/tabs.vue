@@ -110,6 +110,7 @@ export default {
       padding: 0px 15px;
       font-family: Microsoft JhengHei;
       font-weight:bold;
+      cursor: pointer;
     }
   }
   .slider {
