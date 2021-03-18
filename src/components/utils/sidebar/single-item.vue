@@ -69,7 +69,7 @@ export default {
       
       //handle multi-slash
       var real_path = ''
-      const temp_path = process.env.BASE_URL + this.link
+      const temp_path = this.$router.history.base + this.link
       for (let i=0; i<temp_path.length; i++) {
         if (i>0 && temp_path[i] == '/' && temp_path[i-1] == '/') continue
         else {
