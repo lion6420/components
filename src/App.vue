@@ -13,7 +13,10 @@
         </t-input>
       </div>
       <div :class="$style.header_right">
-        <a href="https://github.com/lion6420/components_base" target="blank"><img width="30px" height="30px" src="/components/github.png" style="margin-top:2px;" /></a>
+        <a href="https://github.com/lion6420/components_base" target="blank">
+          <img v-if="process.env.NODE_ENV === 'production'" width="30px" height="30px" src="/components/github.png" style="margin-top:2px;" />
+          <img v-else width="30px" height="30px" src="/github.png" style="margin-top:2px;" />
+        </a>
       </div>
       <div :class="$style.header_right" :style="{'border-bottom': active === 'about' ? '3px #1462D1 solid': 'none'}">
         <router-link to="/about" :class="$style.router_link">About</router-link>
@@ -48,6 +51,7 @@ export default {
       //style
       active: '',
 
+      process: process,
 
       menu: [
         {
