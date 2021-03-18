@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/components/',
+  publicPath: '/components',
   configureWebpack: {
     module: {
       rules: [
