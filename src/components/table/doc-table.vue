@@ -50,6 +50,11 @@
          <markdown-it-vue :content="readme_toggle" />
       </div>
     </div>
+
+    <h2>API - Table</h2>
+    <div :class="$style.demo" style="border:none">
+      <api-table></api-table>
+    </div>
   </div>
 </template>
 
@@ -71,6 +76,9 @@ import readme_cellspan from '../markdown/table/cellspan.md'
 import readme_headerspan from '../markdown/table/headerspan.md'
 import readme_toggle from '../markdown/table/toggle.md'
 
+//api
+import apiTable from './api-table'
+
 export default {
   components: {
     MarkdownItVue,
@@ -79,6 +87,7 @@ export default {
     tableCellspan,
     tableHeaderspan,
     tableToggle,
+    apiTable
   },
   data() {
     return {
