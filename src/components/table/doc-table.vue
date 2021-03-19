@@ -51,6 +51,16 @@
       </div>
     </div>
 
+    <h2>載入效果</h2>
+    <div :class="$style.demo">
+      <div :class="$style.demo_section">
+        <table-loading></table-loading>
+      </div>
+      <div :class="$style.code_section">
+         <markdown-it-vue :content="readme_loading" />
+      </div>
+    </div>
+
     <h2>API - Table</h2>
     <div :class="$style.demo" style="border:none">
       <api-table></api-table>
@@ -68,6 +78,7 @@ import tableMultiHeader from './doc-table-mutiheader'
 import tableCellspan from './doc-table-cellspan'
 import tableHeaderspan from './doc-table-headerspan'
 import tableToggle from './doc-table-toggle'
+import tableLoading from './doc-table-loading'
 
 //markdown text
 import readme_basic_use from '../markdown/table/basic-use.md'
@@ -75,6 +86,7 @@ import readme_mutiheader from '../markdown/table/muti-header.md'
 import readme_cellspan from '../markdown/table/cellspan.md'
 import readme_headerspan from '../markdown/table/headerspan.md'
 import readme_toggle from '../markdown/table/toggle.md'
+import readme_loading from '../markdown/table/loading.md'
 
 //api
 import apiTable from './api-table'
@@ -87,7 +99,8 @@ export default {
     tableCellspan,
     tableHeaderspan,
     tableToggle,
-    apiTable
+    tableLoading,
+    apiTable,
   },
   data() {
     return {
@@ -96,6 +109,7 @@ export default {
       readme_mutiheader: readme_mutiheader,
       readme_headerspan: readme_headerspan,
       readme_toggle: readme_toggle,
+      readme_loading: readme_loading,
     }
   },
   
