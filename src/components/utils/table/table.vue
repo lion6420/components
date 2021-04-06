@@ -3,7 +3,7 @@
   <div class="tableContainer" :id="'tableContainer_' + _uid.toString()" :class="$style.tableContainer" 
     :style="tableWrapperStyle()"
   >
-  <table>
+  <table :id="'table_' + _uid">
     <thead :id="'tableHeadWrapper_' + _uid.toString()" v-if="header">
       <tr v-for="(lv,lv_index) in headerLevel" :key="lv_index">
         <th
@@ -14,24 +14,24 @@
             tableHeaderStyle(lv, header),
             {
               display: spanMethod_header?spanMethod_header(lv_index, h_index).rowspan === 0?'none':'default':'',
-            }]">
+            },if_sticky(header)]">
           <slot name="header" :header="header">{{header.label}}</slot>
         </th>
       </tr>
     </thead>
-    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:data.length" :key="g_index">
+    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:data.length" :key="g_index" :id="'tbody_' + _uid.toString()">
       <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1))" :key="r_index" 
         :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):g_index).toString()"
         :class="$style.tableRow"
         @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)">
         <td v-for="(header,h_index) in propList" :key="h_index"
-          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[groupIndexTranslation(g_index)]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan"
-          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[groupIndexTranslation(g_index)]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).colspan"
+          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan"
+          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).colspan"
           :style="[{
             'border-left': showBorder(h_index),
             'border-top': '1px ' + borderColor + ' solid',
-            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[groupIndexTranslation(g_index)]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan === 0?'none':'default',
-            'background-color': backgroundColor?backgroundColor:bodyStriped(r_index)},
+            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan === 0?'none':'default',
+            'background-color': getBackgroundColor(r_index, header.prop, each_data)},
             header.style,
             if_sticky(header)]">
           <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
@@ -98,6 +98,10 @@ export default {
       default() {
         return true
       }
+    },
+    hoverStyle: {
+      type: String,
+      require: false,
     },
     borderAround: {
       type: Boolean,
@@ -198,7 +202,7 @@ export default {
       }
     },
     backgroundColor: {
-      type: String,
+      type: [Function, String],
       require: false,
     },
     loading: {
@@ -225,20 +229,21 @@ export default {
     this.headerLevel = this.getHeaderlevel() //計算表頭有多少level
     this.getPropList() //處理多級表頭props問題
   },
+  mounted() {
+    this.checkHoverEffect() //是否載入hover效果
+  },
   methods: {
     //table style
     tableWrapperStyle() {
-      var style = {overflowX:'auto'}
+      let style = {}
       if (this.borderAround) {
         style['border'] = '1px  ' + this.borderColor + ' solid'
       }
       if (this.height !== '') {
         style['height'] = this.height
-        style['overflowY'] = 'scroll'
       }
       if (this.maxHeight !== '') {
         style['maxHeight'] = this.maxHeight
-        style['overflowY'] = 'scroll'
       }
       return style
     },
@@ -248,7 +253,7 @@ export default {
       else return '1px  ' + this.borderColor + ' solid'
     },
     tableHeaderStyle(header_level, header) {
-      var style = {
+      let style = {
         'background-color': this.headerBackgroundColor,
         'font-size': this.headerFontSize,
         color: this.headerColor,
@@ -277,13 +282,35 @@ export default {
       }
       return style
     },
+    getBackgroundColor(r_index, prop, data) {
+      // custom background color was set
+      if (this.backgroundColor) {
+        if (typeof(this.backgroundColor) === 'string') return this.backgroundColor
+        else {
+          return this.backgroundColor(prop, data)
+        }
+      }
+      else return this.bodyStriped(r_index)
+    },
+    checkHoverEffect() {
+      let DOM = document.getElementById('tableContainer_' + this._uid.toString())
+      let DOM_table = document.getElementById('table_' + this._uid)
+      if (this.rowHover) {
+        DOM.setAttribute('hover-effect', 'on')
+        if (this.hoverStyle === 'dark') DOM_table.setAttribute('hover-style', 'dark')
+        else DOM_table.setAttribute('hover-style', 'light')
+      }
+      else {
+        DOM.setAttribute('hover-effect', 'off')
+      }
+    },
     if_sticky(header) {
       if (header.fixed === 'left') {
         return {
           position: 'sticky',
           left: '0px',
-          backgroundColor: this.backgroundColor ? this.backgroundColor : '#fff',
-          'box-shadow': '0 0 1px rgba(0,0,0,0.75)',
+          backgroundColor: this.backgroundColor ? this.backgroundColor : 'inherit',
+          'box-shadow': '0px 0px 10px 1px #454545',
           'clip-path': 'inset(0px -15px 0px 0px)'
         }
       }
@@ -291,9 +318,9 @@ export default {
         return {
           position: 'sticky',
           right: '0px',
-          backgroundColor: this.backgroundColor ? this.backgroundColor : '#fff',
-          'box-shadow': '0 0 1px rgba(0,0,0,0.75)',
-          'clip-path': 'inset(0px -15px 0px 0px)'
+          backgroundColor: this.backgroundColor ? this.backgroundColor : 'inherit',
+          'box-shadow': '0px 0px 10px 1px #454545',
+          'clip-path': 'inset(0px 0px 0px -15px)'
         }
       }
     },
@@ -316,27 +343,27 @@ export default {
 
     //多級表頭
     getHeaderlevel() {
-      var level = 1
+      let level = 1
       function dfs(header, currentLv) {
         if (!header.children) {
           level = currentLv>level ? currentLv:level
           return
         }
-        for (var i=0; i<header.children.length; i++) {
+        for (let i=0; i<header.children.length; i++) {
           dfs(header.children[i], ++currentLv)
         }
       }
-      for (var i=0; i<this.columns.length; i++) {
+      for (let i=0; i<this.columns.length; i++) {
         dfs(this.columns[i], 1)
       }
       return level
     },
     getHeaderRowSpan(header) {
-      var depth = 1
+      let depth = 1
       function dfs(header, currentDepth) {
         if (!header.children) depth = currentDepth>depth ? currentDepth:depth
         currentDepth
-        for (var i=0; i<header.children.length; i++) {
+        for (let i=0; i<header.children.length; i++) {
           dfs(header.children[i], currentDepth)
         }
       }
@@ -345,7 +372,7 @@ export default {
     },
     getHeaderColSpan(header) {
       if (!header.children) return 1
-      var colSpanList = new Array(header.children.length).fill(0)
+      let colSpanList = new Array(header.children.length).fill(0)
       function dfs(header, index) {
         if (!header.children) {
           colSpanList[index] = 1
@@ -355,22 +382,22 @@ export default {
           colSpanList[index] = header.children.length + colSpanList[index]
           return
         }
-        for (var i=0; i<header.children.length; i++) {
+        for (let i=0; i<header.children.length; i++) {
           dfs(header.children[i], index)
         }
       }
-      for (var i=0; i<header.children.length; i++) {
+      for (let i=0; i<header.children.length; i++) {
         dfs(header.children[i], i)
       }
-      var colSpan = 0
-      for (var j=0; j<colSpanList.length; j++) {
+      let colSpan = 0
+      for (let j=0; j<colSpanList.length; j++) {
         colSpan+=colSpanList[j]
       }
       return colSpan
     },
     columnsToRender(lv) {
       if (lv ===1) return this.columns
-      var headers = []
+      let headers = []
       function makeHeaders(header, currentLv) {
         currentLv+=1
         if (currentLv === lv) {
@@ -378,17 +405,17 @@ export default {
           return
         }
         if (!header.children) return
-        for (var i=0; i<header.children.length; i++) {
+        for (let i=0; i<header.children.length; i++) {
           makeHeaders(header.children[i], currentLv)
         }
       }
-      for (var i=0; i<this.columns.length; i++) {
+      for (let i=0; i<this.columns.length; i++) {
         makeHeaders(this.columns[i], 0)
       }
       return headers
     },
     getPropList() {
-      var self = this
+      let self = this
       this.propList = []
       function dfs(header) {
         if (header.prop) {
@@ -396,30 +423,30 @@ export default {
           return
         }
         if (!header.children) return
-        for (var i=0; i<header.children.length; i++) {
+        for (let i=0; i<header.children.length; i++) {
           dfs(header.children[i])
         }
       }
-      for (var i=0; i<this.columns.length; i++) dfs(this.columns[i])
+      for (let i=0; i<this.columns.length; i++) dfs(this.columns[i])
       return
     },
 
     //body group
     makeTableDataGroup(groupNumber, groupSize) {
-      let bypass_number = groupSize[0]
-      var start = 0
-      var end = bypass_number
-      for (var i=0; i<groupNumber; i++) {
-        bypass_number = groupSize[end]
+      let bypass_number = 0
+      let start = 0
+      let end = 0
+      for (let i=0; i<=groupNumber; i++) {
+        bypass_number = groupSize[i]
         start = end
         end += bypass_number
       }
       return this.data.slice(start, end)
     },
     groupIndexTranslation(g_index) {
-      var real_index = 0
+      let real_index = 0
       let bypass_number = this.tbodyGroup.groupSize[real_index]
-      for (var i=0; i<g_index; i++) {
+      for (let i=0; i<g_index; i++) {
         real_index += bypass_number
         bypass_number = this.tbodyGroup.groupSize[real_index]
       }
@@ -456,6 +483,7 @@ export default {
 
 .tableContainer {
   @include block(100%);
+  overflow-x: hidden;
   table {
     font-family: arial, sans-serif;
     @include block(100%);
@@ -493,5 +521,9 @@ export default {
     margin:20px 0px;
     text-align: center;
   }
+}
+.tableContainer:hover {
+  overflow-x: auto;
+  overflow-y: auto;
 }
 </style>
