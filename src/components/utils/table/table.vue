@@ -33,6 +33,7 @@
             'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan === 0?'none':'default',
             'background-color': getBackgroundColor(r_index, header.prop, each_data)},
             header.style,
+            tableCellStyle(),
             if_sticky(header)]">
           <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
         </td>
@@ -45,7 +46,7 @@
         </td>
       </tr>
     </tbody>
-    <tfoot :class="$style.footer">
+    <tfoot :class="$style.table_footer">
       <slot name="footer"></slot>
     </tfoot>
   </table>
@@ -170,13 +171,6 @@ export default {
         return 'default'
       }
     },
-    headerPadding: {
-      type: String,
-      require: false,
-      default() {
-        return '8px'
-      }
-    },
     spanMethod: {
       type: Function,
       require: false,
@@ -205,6 +199,13 @@ export default {
       type: [Function, String],
       require: false,
     },
+    size: {
+      type: String,
+      require: false,
+      default() {
+        return 'normal'
+      }
+    },
     loading: {
       type:Boolean,
       require: false,
@@ -221,7 +222,9 @@ export default {
 
       headerLevel: 1,
       lastToggled: null,
-      headerHeight: 30,
+
+      headerHeight_normal: 40,
+      headerHeight_small: 20,
     }
   },
   created() {
@@ -257,17 +260,16 @@ export default {
         'background-color': this.headerBackgroundColor,
         'font-size': this.headerFontSize,
         color: this.headerColor,
-        height: this.headerHeight,
         'z-index': 1,
         'border-left': this.showBorder(),
-        'border-top': header_level!==1 ? this.showBorder(): '',
+        'border-top': header_level != 1 ? this.showBorder(): '',
         'text-align': this.headerTextAlign,
-        padding: this.headerPadding,
       }
-      if (this.height !== '' || this.maxHeight !== '') {
-        style['position'] = 'sticky'
-        style['top'] = ((header_level-1)*this.headerHeight).toString() + 'px'
-      }
+
+      //size diff
+      style = this.tableSizeEffect_header(style, header_level)
+
+      
       if (header.fixed === 'left') {
         style['z-index'] = 2
         style['left'] = '0px'
@@ -279,6 +281,51 @@ export default {
         style['right'] = '0px'
         style['box-shadow'] = '0 0 2px rgba(0,0,0,0.75)'
         style['clip-path'] = 'inset(0px -15px 0px 0px)'
+      }
+      return style
+    },
+    tableCellStyle() {
+      let style = {}
+      style = this.tableSizeEffect_cell(style)
+      return style
+    },
+    tableSizeEffect_header(style, header_level) {
+      switch (this.size) {
+        case 'normal':
+          style['height'] = this.headerHeight_normal + 'px'
+          if (this.height !== '' || this.maxHeight !== '') {
+            style['position'] = 'sticky'
+            style['top'] = ((header_level-1)*this.headerHeight_normal).toString() + 'px'
+          }
+          break
+        case 'small':
+          style['height'] = this.headerHeight_small + 'px'
+          if (this.height !== '' || this.maxHeight !== '') {
+            style['position'] = 'sticky'
+            style['top'] = ((header_level-1)*this.headerHeight_small).toString() + 'px'
+          }
+          break
+        default:
+          style['height'] = this.headerHeight_normal + 'px'
+          if (this.height !== '' || this.maxHeight !== '') {
+            style['position'] = 'sticky'
+            style['top'] = ((header_level-1)*this.headerHeight_normal).toString() + 'px'
+          }
+          break
+      }
+      return style
+    },
+    tableSizeEffect_cell(style) {
+      switch (this.size) {
+        case 'normal':
+          style['padding'] = '8px'
+          break
+        case 'small':
+          style['padding'] = '0px'
+          break
+        default:
+          style['padding'] = '8px'
+          break
       }
       return style
     },
@@ -351,6 +398,7 @@ export default {
         }
         for (let i=0; i<header.children.length; i++) {
           dfs(header.children[i], ++currentLv)
+          currentLv--
         }
       }
       for (let i=0; i<this.columns.length; i++) {
@@ -460,6 +508,13 @@ export default {
         else return '#fff'
       }
       else return ''
+    },
+
+    // other utils
+    isNumber(value) {
+      let figure = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+      if (value in figure) return true
+      else return false
     }
   },
   watch: {
@@ -490,12 +545,14 @@ export default {
     border-collapse: separate; /* Don't collapse */
     border-spacing: 0;
     tr {
+      padding: 0px;
       td {
-        padding: 8px;
+        padding: 0px;
       }
       th {
         font-weight: bold;
         text-align: left;
+        padding: 0px;
       }
     }
     .tableRow:hover {
@@ -506,8 +563,8 @@ export default {
       transition: max-height 0.25s;
       background-color: #f5f5f5;
     }
-    .footer {
-      background-color: #e4e4e4;
+    .table_footer {
+      @include block(100%);
     }
   }
   .emptyText {
@@ -522,6 +579,7 @@ export default {
     text-align: center;
   }
 }
+
 .tableContainer:hover {
   overflow-x: auto;
   overflow-y: auto;

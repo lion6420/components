@@ -1,11 +1,10 @@
 <template>
   <div :class="$style.singleSelect" :style="{width:width}">
-    <div :class="$style.inputWrapper" @mouseleave="hideRemoveIcon" :id="'inputWrapper_' + _uid.toString()">
+    <div :class="$style.inputArea" @mouseleave="hideRemoveIcon">
       <div :class="$style.addonBefore">
         <slot name="addonBefore"></slot>
       </div>
       <input
-        readonly
         :class="$style.inputText"
         :placeholder="placeholder"
         :value="value"
@@ -19,8 +18,8 @@
         <span class="fas fa-times-circle" @mouseover="showRemoveIcon('removeIcon')" @click="removeFunction"></span>
       </div>
     </div>
-    <div :class="$style.optionsArea" :id="'optionsArea_' + _uid.toString()" :style="{width:width, left: startPositionX + 'px', top: startPositionY + 'px'}">
-      <div :class="$style.option" v-for="(option,o_index) in options" :key="o_index" @click="selectFunction(option)"
+    <div :class="$style.optionsArea" :id="'optionsArea_' + _uid.toString()" :style="{width:width}">
+      <div :class="$style.option" v-for="(option,o_index) in options_show" :key="o_index" @click="selectFunction(option)"
         :style="option && option.disabled ? {color: '#828282', cursor: 'not-allowed'}:{}">
         <span :class="$style.optionText">{{option.label ? option.label:option}}</span>
       </div>
@@ -70,9 +69,11 @@ export default {
   },
   data() {
     return {
-      startPositionX: 0,
-      startPositionY: 0,
+      options_show: [],
     }
+  },
+  created() {
+    this.filterOptions()
   },
   mounted() {
     var self = this
@@ -84,25 +85,17 @@ export default {
       else self.closeOptionsArea()
     }
     document.addEventListener('click', this.clickEvent)
-    document.addEventListener('scroll', this.getOptionAreaPosition, true)
-    window.addEventListener('resize', this.getOptionAreaPosition)
   },
   methods: {
     openOptionsArea() {
-      let DOM = document.getElementById('optionsArea_' + this._uid.toString())
+      var DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'block'
       DOM.style.maxHeight = '200px'
-      this.getOptionAreaPosition()
     },
     closeOptionsArea() {
-      let DOM = document.getElementById('optionsArea_' + this._uid.toString())
+      var DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
-    },
-    getOptionAreaPosition() {
-      let DOM = document.getElementById('inputWrapper_' + this._uid.toString())
-      this.startPositionX = DOM.getBoundingClientRect().left
-      this.startPositionY = DOM.getBoundingClientRect().top + document.documentElement.scrollTop + 35
     },
     showRemoveIcon(id) {
       const DOM = document.getElementById('removeIcon_' + this._uid.toString())
@@ -120,20 +113,36 @@ export default {
     },
     removeFunction() {
       this.$emit('input', '')
+    },
+    filterOptions() {
+      if (this.value === '') this.options_show = this.options
+      const optionRegExp = new RegExp(`${this.value}`)
+      var filteredArray = []
+      for (let i=0; i<this.options.length; i++) {
+        if (optionRegExp.test(this.options[i])) filteredArray.push(this.options[i])
+      }
+      this.options_show = filteredArray
+    }
+  },
+  watch: {
+    value() {
+      this.filterOptions()
+    },
+    options() {
+      this.filterOptions()
     }
   },
   destroyed() {
     document.removeEventListener('click', this.clickEvent)
-    document.removeEventListener('scroll', this.getOptionAreaPosition, true)
-    window.removeEventListener('resize', this.getOptionAreaPosition)
   }
 }
 </script>
 
 <style lang="scss" module>
-@import './common/general.scss';
+@import '@/styles/general.scss';
 .singleSelect {
-  .inputWrapper {
+  position:relative;
+  .inputArea {
     @include block(100%, $radius: 3px);
     display: flex;
     border: 1px solid #a7a7a7;
@@ -169,7 +178,7 @@ export default {
     font-family: Microsoft JhengHei;
     position: absolute;
     background-color: #fff;
-    z-index: 1;
+    z-index: 5;
     .option {
       @include block(100%);
       display: flex;
