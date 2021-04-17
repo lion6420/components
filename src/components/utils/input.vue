@@ -4,7 +4,6 @@
     :style="{
       width: width,
       border: border,
-      'font-color': fontColor
     }">
     <div :class="$style.addonBefore">
       <slot name="addonBefore"></slot>
@@ -13,7 +12,10 @@
       :class="$style.inputStyle"
       :placeholder="placeholder"
       :value="value"
-      @input="$emit('input', $event.target.value)" />
+      @input="$emit('input', $event.target.value)"
+      :style="{height: height ? height:'30px', 'text-align':textAlign?textAlign:'default'}"
+      :disabled="disabled"
+      :type="type" />
       <div :class="$style.addonAfter">
         <slot name="addonAfter"></slot>
       </div>
@@ -27,12 +29,34 @@ export default {
       type: String,
       require: true,
     },
+    type: {
+      type: String,
+      require: false,
+      default() {
+        return 'text'
+      }
+    },
+    disabled: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
     width: {
       type: String,
       require: false,
       default() {
         return '200px'
       }
+    },
+    height: {
+      type: String,
+      require: false,
+    },
+    textAlign: {
+      type: String,
+      require: false,
     },
     placeholder: {
       type: String,
@@ -59,10 +83,6 @@ export default {
       type: String,
       require: false,
     },
-    fontColor: {
-      type: String,
-      require: false
-    }
   },
 }
 </script>
@@ -70,23 +90,24 @@ export default {
 <style lang="scss" module>
 @import './common/general.scss';
 .inputWrapper {
+  @include block(100%, $radius: 3px);
   display: flex;
   font-size: 15px;
   border: 1px solid #c2c2c2;
-  border-radius: 3px;
+  background-color: $background-color-light;
+  color: #000;
   .addonBefore {
     padding:4px;
-    background-color: #fff;
   }
   .inputStyle {
     @include block(100%, 30px);
     outline: none;
     border:none;
     font-size: 15px;
+    background-color: $background-color-light;
   }
   .addonAfter {
     padding:4px;
-    background-color: #fff;
   }
 }
 .inputWrapper:focus-within {
