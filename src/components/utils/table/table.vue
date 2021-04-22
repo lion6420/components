@@ -19,32 +19,34 @@
         </th>
       </tr>
     </thead>
-    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:data.length" :key="g_index" :id="'tbody_' + _uid.toString()">
-      <tr v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:new Array(data.length).fill(1))" :key="r_index" 
-        :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):g_index).toString()"
-        :class="$style.tableRow"
-        @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):g_index)">
-        <td v-for="(header,h_index) in propList" :key="h_index"
-          :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan"
-          :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).colspan"
-          :style="[{
-            'border-left': showBorder(h_index),
-            'border-top': '1px ' + borderColor + ' solid',
-            'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, tbodyGroup?r_index:g_index, h_index, header, each_data).rowspan === 0?'none':'default',
-            'background-color': getBackgroundColor(r_index, header.prop, each_data)},
-            header.style,
-            tableCellStyle(),
-            if_sticky(header)]">
-          <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
-        </td>
-      </tr>
-      <tr>
-        <td v-if="rowToggled" :colspan="columns.length" style="padding:0px;cursor: default;">
-          <div class="rowDetail" :class="$style.rowDetail">
-            <slot name="rowToggle" :index="g_index"></slot>
-          </div>
-        </td>
-      </tr>
+    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:1" :key="g_index" :id="'tbody_' + _uid.toString()">
+      <template v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:null)" >
+        <tr :key="r_index"
+          :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):r_index).toString()"
+          :class="$style.tableRow"
+          @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):r_index)">
+          <td v-for="(header,h_index) in propList" :key="h_index"
+            :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).rowspan"
+            :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).colspan"
+            :style="[{
+              'border-left': showBorder(h_index),
+              'border-top': '1px ' + borderColor + ' solid',
+              'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).rowspan === 0?'none':'default',
+              'background-color': getBackgroundColor(r_index, header.prop, each_data)},
+              header.style,
+              tableCellStyle(),
+              if_sticky(header)]">
+            <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
+          </td>
+        </tr>
+        <tr :key="r_index" v-if="rowToggled">
+          <td :colspan="columns.length" style="padding:0px;cursor: default;">
+            <div class="rowDetail" :class="$style.rowDetail">
+              <slot name="rowToggle" :index="g_index"></slot>
+            </div>
+          </td>
+        </tr>
+      </template>
     </tbody>
     <tfoot :class="$style.table_footer">
       <slot name="footer"></slot>
@@ -233,7 +235,7 @@ export default {
     this.getPropList() //處理多級表頭props問題
   },
   mounted() {
-    this.checkHoverEffect() //是否載入hover效果
+    // this.checkHoverEffect() //是否載入hover效果
   },
   methods: {
     //table style
@@ -376,15 +378,18 @@ export default {
     toggleRow(group_index, row_index) {
       if (typeof(this.clickEvent) === 'function') this.clickEvent(row_index)
       if (this.rowToggled === false) return
-      if (document.getElementsByClassName('rowDetail')[group_index].style.display === 'block') {
-        document.getElementsByClassName('rowDetail')[group_index].style.display = 'none'
+
+      let toggle_index = this.tbodyGroup ? group_index:row_index
+
+      if (document.getElementsByClassName('rowDetail')[toggle_index].style.display === 'block') {
+        document.getElementsByClassName('rowDetail')[toggle_index].style.display = 'none'
       }
       else {
         if (this.lastToggled !== null) {
           document.getElementsByClassName('rowDetail')[this.lastToggled].style.display = 'none'
         }
-        document.getElementsByClassName('rowDetail')[group_index].style.display = 'block'
-        this.lastToggled = group_index
+        document.getElementsByClassName('rowDetail')[toggle_index].style.display = 'block'
+        this.lastToggled = toggle_index
       }
     },
 
@@ -481,6 +486,8 @@ export default {
 
     //body group
     makeTableDataGroup(groupNumber, groupSize) {
+      if (!groupSize) return this.data
+
       let bypass_number = 0
       let start = 0
       let end = 0
