@@ -70,6 +70,13 @@ export default {
           example: 'True',
         },
         {
+          parameter: 'hoverStyle',
+          description: 'mouse over hover style',
+          type: 'string',
+          default: 'light',
+          example: 'hoverStyle="dark", hoverStyle="light"',
+        },
+        {
           parameter: 'headerFontSize',
           description: '表頭字體大小',
           type: 'string',

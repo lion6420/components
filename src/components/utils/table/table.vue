@@ -24,7 +24,8 @@
         <tr :key="r_index"
           :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):r_index).toString()"
           :class="$style.tableRow"
-          @click="toggleRow(g_index, tbodyGroup?groupIndexTranslation(g_index):r_index)">
+          :style="{cursor: clickEvent === null ? 'default':'pointer'}"
+          @click="toggleRow(g_index, tbodyGroup?(groupIndexTranslation(g_index) + r_index):r_index)">
           <td v-for="(header,h_index) in propList" :key="h_index"
             :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).rowspan"
             :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).colspan"
@@ -193,9 +194,7 @@ export default {
     clickEvent: {
       type: Function,
       require: false,
-      default() {
-        return null
-      }
+      default: null
     },
     backgroundColor: {
       type: [Function, String],
@@ -235,7 +234,7 @@ export default {
     this.getPropList() //處理多級表頭props問題
   },
   mounted() {
-    // this.checkHoverEffect() //是否載入hover效果
+    this.checkHoverEffect() //是否載入hover效果
   },
   methods: {
     //table style
@@ -500,10 +499,10 @@ export default {
     },
     groupIndexTranslation(g_index) {
       let real_index = 0
-      let bypass_number = this.tbodyGroup.groupSize[real_index]
+      let bypass_number = this.tbodyGroup.groupSize[0]
       for (let i=0; i<g_index; i++) {
         real_index += bypass_number
-        bypass_number = this.tbodyGroup.groupSize[real_index]
+        bypass_number = this.tbodyGroup.groupSize[i+1]
       }
       return real_index
     },
