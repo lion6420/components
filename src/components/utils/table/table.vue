@@ -19,20 +19,55 @@
         </th>
       </tr>
     </thead>
-    <tbody v-for="(group,g_index) in tbodyGroup?tbodyGroup.groupNumber:1" :key="g_index" :id="'tbody_' + _uid.toString()">
-      <template v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup?tbodyGroup.groupSize:null)" >
-        <tr :key="r_index"
-          :id="'tableRow_' + _uid.toString() + '_' + (tbodyGroup?groupIndexTranslation(g_index):r_index).toString()"
+    <!--normal non-grouped table-->
+    <template v-if="!tbodyGroup">
+      <tbody>
+        <template v-for="(each_data,r_index) in data">
+          <tr :key="r_index"
+            :id="'tableRow_' + _uid.toString()"
+            :class="$style.tableRow"
+            :style="{cursor: clickEvent === null ? 'default':'pointer'}"
+            @click="toggleRow(null, r_index)">
+            <td v-for="(header,h_index) in propList" :key="h_index"
+              :rowspan="spanMethod(null, null, r_index, h_index, header, each_data).rowspan"
+              :colspan="spanMethod(null, null, r_index, h_index, header, each_data).colspan"
+              :style="[{
+                'border-left': showBorder(h_index),
+                'border-top': '1px ' + borderColor + ' solid',
+                'display': spanMethod(null, null, r_index, h_index, header, each_data).rowspan === 0?'none':'default',
+                'background-color': getBackgroundColor(r_index, header.prop, each_data)},
+                header.style,
+                tableCellStyle(),
+                if_sticky(header)]">
+              <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
+            </td>
+          </tr>
+          <tr :key="r_index" v-if="rowToggled">
+            <td :colspan="columns.length" style="padding:0px;cursor: default;">
+              <div class="rowDetail" :class="$style.rowDetail">
+                <slot name="rowToggle" :index="r_index"></slot>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </template>
+
+    <template v-else>
+      <tbody v-for="(group,g_index) in tbodyGroup.groupNumber" :key="g_index" :id="'tbody_' + _uid.toString()">
+        <tr
+          v-for="(each_data,r_index) in makeTableDataGroup(g_index, tbodyGroup.groupSize)"
+          :key="r_index"
+          :id="'tableRow_' + _uid.toString() + '_' + (groupIndexTranslation(g_index)).toString()"
           :class="$style.tableRow"
-          :style="{cursor: clickEvent === null ? 'default':'pointer'}"
-          @click="toggleRow(g_index, tbodyGroup?(groupIndexTranslation(g_index) + r_index):r_index)">
+          @click="toggleRow(g_index, groupIndexTranslation(g_index))">
           <td v-for="(header,h_index) in propList" :key="h_index"
-            :rowspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).rowspan"
-            :colspan="spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).colspan"
+            :rowspan="spanMethod(g_index, tbodyGroup.groupSize[g_index], r_index, h_index, header, each_data).rowspan"
+            :colspan="spanMethod(g_index, tbodyGroup.groupSize[g_index], r_index, h_index, header, each_data).colspan"
             :style="[{
               'border-left': showBorder(h_index),
               'border-top': '1px ' + borderColor + ' solid',
-              'display': spanMethod(g_index, tbodyGroup?tbodyGroup.groupSize[g_index]:1, r_index, h_index, header, each_data).rowspan === 0?'none':'default',
+              'display': spanMethod(g_index, tbodyGroup.groupSize[g_index], r_index, h_index, header, each_data).rowspan === 0?'none':'default',
               'background-color': getBackgroundColor(r_index, header.prop, each_data)},
               header.style,
               tableCellStyle(),
@@ -40,15 +75,16 @@
             <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
           </td>
         </tr>
-        <tr :key="r_index" v-if="rowToggled">
+        <tr v-if="rowToggled">
           <td :colspan="columns.length" style="padding:0px;cursor: default;">
             <div class="rowDetail" :class="$style.rowDetail">
               <slot name="rowToggle" :index="g_index"></slot>
             </div>
           </td>
         </tr>
-      </template>
-    </tbody>
+      </tbody>
+    </template>
+    
     <tfoot :class="$style.table_footer">
       <slot name="footer"></slot>
     </tfoot>
@@ -378,7 +414,7 @@ export default {
       if (typeof(this.clickEvent) === 'function') this.clickEvent(row_index)
       if (this.rowToggled === false) return
 
-      let toggle_index = this.tbodyGroup ? group_index:row_index
+      let toggle_index = group_index ? group_index:row_index
 
       if (document.getElementsByClassName('rowDetail')[toggle_index].style.display === 'block') {
         document.getElementsByClassName('rowDetail')[toggle_index].style.display = 'none'
