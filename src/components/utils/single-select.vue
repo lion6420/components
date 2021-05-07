@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.singleSelect" :style="{width:width}">
+  <div :class="$style.singleSelect" :style="{width:width}" :id="'single-select_' + _uid.toString()">
     <div :class="$style.inputArea" @mouseleave="hideRemoveIcon">
       <div :class="$style.addonBefore">
         <slot name="addonBefore"></slot>
@@ -18,7 +18,7 @@
         <span class="fas fa-times-circle" @mouseover="showRemoveIcon('removeIcon')" @click="removeFunction"></span>
       </div>
     </div>
-    <div :class="$style.optionsArea" :id="'optionsArea_' + _uid.toString()" :style="{width:width}">
+    <div :class="$style.optionsArea" v-if="expand_options" :id="'optionsArea_' + _uid.toString()" :style="{width:width}">
       <div :class="$style.option" v-for="(option,o_index) in options_show" :key="o_index" @click="selectFunction(option)"
         :style="option && option.disabled ? {color: '#828282', cursor: 'not-allowed'}:{}">
         <span :class="$style.optionText">{{option.label ? option.label:option}}</span>
@@ -70,6 +70,7 @@ export default {
   data() {
     return {
       options_show: [],
+      expand_options: false,
     }
   },
   created() {
@@ -84,18 +85,42 @@ export default {
       }
       else self.closeOptionsArea()
     }
+    this.scrollEvent = function() {
+      self.closeOptionsArea()
+    }
     document.addEventListener('click', this.clickEvent)
+    document.addEventListener('scroll', this.scrollEvent, true)
   },
   methods: {
     openOptionsArea() {
-      var DOM = document.getElementById('optionsArea_' + this._uid.toString())
-      DOM.style.display = 'block'
-      DOM.style.maxHeight = '200px'
+      this.expand_options = true
+      var self = this
+      // after DOM rendered
+      this.$nextTick(function() {
+        let DOM = document.getElementById('optionsArea_' + self._uid.toString())
+        DOM.style.display = 'block'
+        DOM.style.maxHeight = '200px'
+        
+        let position = self.getPosition()
+        DOM.style.left = position.x + 'px'
+        DOM.style.top = position.y + 'px'
+      })
     },
     closeOptionsArea() {
+      if (!this.expand_options) return
       var DOM = document.getElementById('optionsArea_' + this._uid.toString())
       DOM.style.display = 'none'
       DOM.style.maxHeight = '0px'
+      this.expand_options = false
+    },
+    getPosition() {
+      let x, y
+      const DOM = document.getElementById('inputArea_' + this._uid.toString())
+
+      x = DOM.getBoundingClientRect().left + window.scrollX - DOM.offsetLeft/2
+      y = DOM.getBoundingClientRect().top + window.scrollY + DOM.offsetHeight + 1
+
+      return {x:x, y:y}
     },
     showRemoveIcon(id) {
       const DOM = document.getElementById('removeIcon_' + this._uid.toString())
@@ -134,14 +159,15 @@ export default {
   },
   destroyed() {
     document.removeEventListener('click', this.clickEvent)
+    document.removeEventListener('scroll', this.scrollEvent, true)
   }
 }
 </script>
 
 <style lang="scss" module>
-@import '@/styles/general.scss';
+@import './common/general.scss';
 .singleSelect {
-  position:relative;
+  background-color: #fff;
   .inputArea {
     @include block(100%, $radius: 3px);
     display: flex;
@@ -174,11 +200,10 @@ export default {
     transition: max-height 0.2s linear;
     box-shadow: 0px 0px 5px rgb(194, 194, 194);
     overflow-y: auto;
-    display: none;
     font-family: Microsoft JhengHei;
     position: absolute;
     background-color: #fff;
-    z-index: 5;
+    z-index: 1;
     .option {
       @include block(100%);
       display: flex;
