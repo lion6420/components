@@ -392,6 +392,7 @@ export default {
       if (header.fixed === 'left') {
         return {
           position: 'sticky',
+          'z-index': 2,
           left: '0px',
           backgroundColor: this.backgroundColor ? this.backgroundColor : 'inherit',
           'box-shadow': '0px 0px 10px 1px #454545',
@@ -401,6 +402,7 @@ export default {
       else if (header.fixed === 'right') {
         return {
           position: 'sticky',
+          'z-index': 2,
           right: '0px',
           backgroundColor: this.backgroundColor ? this.backgroundColor : 'inherit',
           'box-shadow': '0px 0px 10px 1px #454545',

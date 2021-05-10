@@ -14,7 +14,6 @@
       :value="value"
       @input="$emit('input', $event.target.value)"
       :style="{height: height ? height:'30px', 'text-align':textAlign?textAlign:'default'}"
-      :disabled="disabled"
       :type="type" />
       <div :class="$style.addonAfter">
         <slot name="addonAfter"></slot>
@@ -34,13 +33,6 @@ export default {
       require: false,
       default() {
         return 'text'
-      }
-    },
-    disabled: {
-      type: Boolean,
-      require: false,
-      default() {
-        return false
       }
     },
     width: {
@@ -90,12 +82,12 @@ export default {
 <style lang="scss" module>
 @import './common/general.scss';
 .inputWrapper {
-  @include block(100%, $radius: 3px);
+  @include block(100%, 32px, $radius: 3px);
   display: flex;
   font-size: 15px;
   border: 1px solid #c2c2c2;
-  background-color: $background-color-light;
   color: #000;
+  background-color: #fff;
   .addonBefore {
     padding:4px;
   }
@@ -104,7 +96,6 @@ export default {
     outline: none;
     border:none;
     font-size: 15px;
-    background-color: $background-color-light;
   }
   .addonAfter {
     padding:4px;

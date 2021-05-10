@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.singleSelect" :style="{width:width}" :id="'single-select_' + _uid.toString()">
-    <div :class="$style.inputArea" @mouseleave="hideRemoveIcon">
+    <div :class="$style.inputArea" @mouseleave="hideRemoveIcon" :id="'input_container_' + _uid.toString()">
       <div :class="$style.addonBefore">
         <slot name="addonBefore"></slot>
       </div>
@@ -65,6 +65,13 @@ export default {
       default() {
         return ''
       }
+    },
+    filter_disabled: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
     }
   },
   data() {
@@ -115,9 +122,9 @@ export default {
     },
     getPosition() {
       let x, y
-      const DOM = document.getElementById('inputArea_' + this._uid.toString())
+      const DOM = document.getElementById('input_container_' + this._uid.toString())
 
-      x = DOM.getBoundingClientRect().left + window.scrollX - DOM.offsetLeft/2
+      x = DOM.getBoundingClientRect().left + window.scrollX
       y = DOM.getBoundingClientRect().top + window.scrollY + DOM.offsetHeight + 1
 
       return {x:x, y:y}
@@ -140,13 +147,15 @@ export default {
       this.$emit('input', '')
     },
     filterOptions() {
-      if (this.value === '') this.options_show = this.options
-      const optionRegExp = new RegExp(`${this.value}`)
-      var filteredArray = []
-      for (let i=0; i<this.options.length; i++) {
-        if (optionRegExp.test(this.options[i])) filteredArray.push(this.options[i])
+      if (this.value === '' || this.filter_disabled) this.options_show = this.options
+      else {
+        const optionRegExp = new RegExp(`${this.value}`)
+        var filteredArray = []
+        for (let i=0; i<this.options.length; i++) {
+          if (optionRegExp.test(this.options[i])) filteredArray.push(this.options[i])
+        }
+        this.options_show = filteredArray
       }
-      this.options_show = filteredArray
     }
   },
   watch: {
