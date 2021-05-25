@@ -92,7 +92,8 @@ export default {
       }
       else self.closeOptionsArea()
     }
-    this.scrollEvent = function() {
+    this.scrollEvent = function(evt) {
+      if (evt.target.id === ('optionsArea_' + self._uid.toString())) return
       self.closeOptionsArea()
     }
     document.addEventListener('click', this.clickEvent)
