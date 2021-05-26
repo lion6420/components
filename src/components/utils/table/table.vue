@@ -42,7 +42,7 @@
               <slot :name="header.prop" :data="each_data">{{each_data[header.prop]}}</slot>
             </td>
           </tr>
-          <tr :key="r_index" v-if="rowToggled">
+          <tr :key="'rowToggled_' + r_index.toString()" v-if="rowToggled">
             <td :colspan="columns.length" style="padding:0px;cursor: default;">
               <div class="rowDetail" :class="$style.rowDetail">
                 <slot name="rowToggle" :index="r_index"></slot>

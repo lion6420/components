@@ -4,7 +4,7 @@
   <div :class="$style.wrapper">
     <t-table :columns="headers" :loading="loading">
       <template slot="loading">
-        <div :class="$style.loader"></div>
+        <t-spin tip="loading"></t-spin>
       </template>
     </t-table>
   </div>
@@ -12,9 +12,11 @@
 
 <script>
 import tTable from '@/components/utils/table/table'
+import tSpin from '@/components/utils/spin'
 export default {
   components: {
     tTable,
+    tSpin
   },
   data() {
     return {
@@ -35,22 +37,6 @@ export default {
 @import '@/styles/general.scss';
 .wrapper {
   @include block(100%);
-  text-align: center;
-  .loader {
-    @include border();
-    border: 3px solid #fff;
-    border-radius: 50%;
-    border-top: 3px solid #3498db;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: auto;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 }
-
 </style>
 ```
