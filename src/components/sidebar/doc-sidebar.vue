@@ -19,7 +19,7 @@ import MarkdownItVue from 'markdown-it-vue'
 import 'markdown-it-vue/dist/markdown-it-vue.css'
 
 //demo components
-import sidebarBasic from './doc-sidebar-basic.'
+import sidebarBasic from './doc-sidebar-basic.vue'
 
 //markdown text
 import readme_basic_use from '../markdown/sidebar/basic_use.md'

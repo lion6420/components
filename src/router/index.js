@@ -45,8 +45,8 @@ const routes = [
     component: DocSidebar,
   },
   {
-    path: '/doc/tab',
-    name: 'tab',
+    path: '/doc/tabs',
+    name: 'tabs',
     component: DocTab,
   }
 ]

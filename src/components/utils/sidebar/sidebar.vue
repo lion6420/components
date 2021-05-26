@@ -3,7 +3,7 @@
     :class="$style.sidebar"
     :id="'sidebar_' + _uid.toString()"
     :style="{
-      width: width,
+      width: width.toString() + 'px',
     }">
     <div v-for="(item, i_index) in menu" :key="i_index" :style="{'margin-top' : i_index === 0 ? '0px': '0px'}">
       <sidebar-item :root="item" :showSidebar="showSidebar" :theme="theme" :width="width"></sidebar-item>
@@ -16,10 +16,10 @@ import sidebarItem from './sidebar-item'
 export default {
   props: {
     width: {
-      type: String,
+      type: Number,
       require: false,
       default() {
-        return '200px'
+        return 220
       }
     },
     menu: {
@@ -75,6 +75,9 @@ export default {
       else {
         DOM.style.maxWidth = '0px'
       }
+    },
+    theme() {
+      this.initTheme()
     }
   }
 }
@@ -88,8 +91,8 @@ export default {
   top: 0px;
   left: 0px;
   bottom: 0px;
-  z-index: 3;
   transition: max-width 0.3s linear;
+  background-color: var(--sidebar-bg-color);
 }
 @media screen and (max-width: 700px) {
   .sidebar {
@@ -99,7 +102,6 @@ export default {
     top: 0px;
     left: 0px;
     bottom: 0px;
-    z-index: 3;
   }
 }
 </style>

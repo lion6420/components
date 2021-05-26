@@ -28,7 +28,7 @@
     </div>
     <div :class="$style.body">
       <div :class="$style.sidebar">
-        <sidebar :menu="menu" style="margin-top:60px" width="220px"></sidebar>
+        <sidebar :menu="menu" style="margin-top:60px" :width="230"></sidebar>
       </div>
       <div :class="$style.content">
         <router-view></router-view>
@@ -76,7 +76,7 @@ export default {
         },
         {
           label: 'Tab 標籤頁',
-          link: '/doc/tab',
+          link: '/doc/tabs',
         }
       ]
     }
@@ -141,7 +141,7 @@ export default {
     display: flex;
     margin-top:60px;
     .sidebar {
-      @include block(220px);
+      @include block(230px);
       background-color: $color-white;
       position: fixed;
       left: 0px;
