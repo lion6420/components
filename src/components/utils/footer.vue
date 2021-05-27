@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.footer" :style="{top: footerPosition + 'px'}">
-    <p style="position:relative;top:5px;margin:0px">2021 &copy; IAI Innovative Application Dept. </p>
+    <p style="position:relative;top:5px;margin:0px">2021 &copy; Jian Ting Chen. </p>
   </div>
 </template>
 
@@ -25,6 +25,6 @@ export default {
   color:#fff;
   font-size: 16px;
   position: relative;
-  z-index: -1;
+  z-index: 1;
 }
 </style>

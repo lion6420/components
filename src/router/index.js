@@ -6,6 +6,8 @@ import DocSingleSelect from '@/components/single-select/doc-single-select'
 import DocMultiSelect from '@/components/multi-select/doc-multi-select'
 import DocSidebar from '@/components/sidebar/doc-sidebar'
 import DocTab from '@/components/tab/doc-tab'
+import DocProgress from '@/components/progress/doc-progress'
+import DocSpin from '@/components/spin/doc-spin'
 import About from '@/components/about'
 
 
@@ -48,6 +50,16 @@ const routes = [
     path: '/doc/tabs',
     name: 'tabs',
     component: DocTab,
+  },
+  {
+    path: '/doc/progress',
+    name: 'progress',
+    component: DocProgress,
+  },
+  {
+    path: '/doc/spin',
+    name: 'spin',
+    component: DocSpin,
   }
 ]
 

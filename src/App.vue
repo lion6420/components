@@ -34,17 +34,22 @@
         <router-view></router-view>
       </div>
     </div>
+    <div :class="$style.footer">
+      <t-footer></t-footer>
+    </div>
   </div>
 </template>
 
 <script>
 import tInput from '@/components/utils/input'
 import sidebar from '@/components/utils/sidebar/sidebar'
+import tFooter from '@/components/utils/footer'
 export default {
   name: 'App',
   components: {
     tInput,
-    sidebar
+    sidebar,
+    tFooter
   },
   data() {
     return {
@@ -77,6 +82,14 @@ export default {
         {
           label: 'Tab 標籤頁',
           link: '/doc/tabs',
+        },
+        {
+          label: 'Progress 進度條',
+          link: '/doc/progress',
+        },
+        {
+          label: 'Spin 載入中',
+          link: '/doc/spin',
         }
       ]
     }
