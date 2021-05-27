@@ -26,7 +26,7 @@
         <router-link to="/doc/table" :class="$style.router_link">組件</router-link>
       </div>
     </div>
-    <div :class="$style.body">
+    <div :class="$style.body" :style="{'min-height': bodyMinHeight + 'px'}">
       <div :class="$style.sidebar">
         <sidebar :menu="menu" style="margin-top:60px" :width="230"></sidebar>
       </div>
@@ -55,6 +55,8 @@ export default {
     return {
       //style
       active: '',
+
+      bodyMinHeight: 0,
 
       process: process,
 
@@ -96,6 +98,8 @@ export default {
   },
   created() {
     this.activeCheck()
+    window.addEventListener('resize', this.getBodyHeight)
+    this.getBodyHeight()
   },
   methods: {
     activeCheck() {
@@ -109,11 +113,17 @@ export default {
         this.active = 'about'
       }
     },
+    getBodyHeight() {
+      this.bodyMinHeight = document.documentElement.clientHeight - 100
+    }
   },
   watch: {
     "$route.path": function() {
       this.activeCheck()
     }
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.getBodyHeight)
   }
 }
 </script>
