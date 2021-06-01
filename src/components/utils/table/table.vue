@@ -94,7 +94,7 @@
   </div>
   <div v-if="loading" :class="$style.loading">
     <slot name="loading">
-      <t-spin tip="加載中......" size="large"></t-spin>
+      <t-spin tip="loading"></t-spin>
     </slot>
   </div>
   </div>
