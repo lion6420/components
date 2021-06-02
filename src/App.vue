@@ -70,11 +70,11 @@ export default {
           link: '/doc/input',
         },
         {
-          label: 'Single select 單選框',
+          label: 'Select 單選框',
           link: '/doc/single-select',
         },
         {
-          label: 'Multi select 多選框',
+          label: 'Select 多選框',
           link: '/doc/multi-select',
         },
         {
