@@ -14,14 +14,13 @@
 
 # 工作經歷
 
-## 鴻海科技集團 （ 2019年4月 ~ Now ）
+## 鴻海科技集團 工業互聯網創新應用部 （ 2019年4月 ~ Now ）
 
 ### 前端網頁開發 (Vue.js)
  - 負責公司專案前端網頁部分頁面設計、所有功能開發
  - 開發專案: 人資管理系統、倉庫智能管理系統、測試工站分析系統
  - 根據需求進行頁面排版規劃，RWD響應式設計
  - Vue.js組件設計, 圖表顯示(echarts)
- - 設計權限管理模塊
  - 串接RESTful API (axios)
 
 
@@ -54,15 +53,11 @@
 
 ### Python
  - 能夠利用Python串接資料庫
- - 利用pandas套件做資料處理
  - 設計並實作資料結構滿足特殊需要
 
 ### SQL
  - 使用過MySQL、Oracle資料庫
  - 略懂SQL語法，對資料庫做基本查詢、基本寫入
-
-### UNIT:TEST
- - 能夠使用jest對Javascript code做簡單測試
 
 ### C/C++
  - Socket programming
@@ -70,14 +65,13 @@
 ### 其他项目
  - git版本控制
  - npm套件管理工具
- - webpack打包工具
 
 ---
 
 # 開發項目作品
 
-### 倉庫管理系統
-### 組件庫
+### 倉庫管理系統 (http://jcchen.csie.org:8401/warehouse/)
+### 組件庫 (http://jcchen.csie.org:8401/components/)
 
 ---
 # 學歷
