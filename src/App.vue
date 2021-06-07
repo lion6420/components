@@ -1,7 +1,7 @@
 <template>
   <div :class="$style.app">
     <div :class="$style.header">
-      <div :class="$style.header_left">Ting components base</div>
+      <div :class="$style.header_left">Ting components Library</div>
       <div :class="$style.header_left" style="margin-left: 50px">
         <t-input
           border="1px #EDEDED solid"
