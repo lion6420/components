@@ -61,6 +61,16 @@
       </div>
     </div>
 
+    <h2>表格分組</h2>
+    <div :class="$style.demo">
+      <div :class="$style.demo_section">
+        <table-span-toggled></table-span-toggled>
+      </div>
+      <div :class="$style.code_section">
+         <markdown-it-vue :content="readme_span_toggled" />
+      </div>
+    </div>
+
     <h2>API - Table</h2>
     <div :class="$style.demo" style="border:none">
       <api-table></api-table>
@@ -79,6 +89,7 @@ import tableCellspan from './doc-table-cellspan'
 import tableHeaderspan from './doc-table-headerspan'
 import tableToggle from './doc-table-toggle'
 import tableLoading from './doc-table-loading'
+import tableSpanToggled from './doc-table-span-toggled.vue'
 
 //markdown text
 import readme_basic_use from '../markdown/table/basic-use.md'
@@ -87,6 +98,7 @@ import readme_cellspan from '../markdown/table/cellspan.md'
 import readme_headerspan from '../markdown/table/headerspan.md'
 import readme_toggle from '../markdown/table/toggle.md'
 import readme_loading from '../markdown/table/loading.md'
+import readme_span_toggled from '../markdown/table/span-toggled.md'
 
 //api
 import apiTable from './api-table'
@@ -100,6 +112,7 @@ export default {
     tableHeaderspan,
     tableToggle,
     tableLoading,
+    tableSpanToggled,
     apiTable,
   },
   data() {
@@ -110,6 +123,7 @@ export default {
       readme_headerspan: readme_headerspan,
       readme_toggle: readme_toggle,
       readme_loading: readme_loading,
+      readme_span_toggled: readme_span_toggled
     }
   },
   

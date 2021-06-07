@@ -44,7 +44,7 @@
           </tr>
           <tr :key="'rowToggled_' + r_index.toString()" v-if="rowToggled">
             <td :colspan="columns.length" style="padding:0px;cursor: default;">
-              <div class="rowDetail" :class="$style.rowDetail">
+              <div :id="'rowDetail_' + r_index.toString() + '_' + _uid.toString()" :class="$style.rowDetail">
                 <slot name="rowToggle" :index="r_index"></slot>
               </div>
             </td>
@@ -76,8 +76,8 @@
           </td>
         </tr>
         <tr v-if="rowToggled">
-          <td :colspan="columns.length" style="padding:0px;cursor: default;">
-            <div class="rowDetail" :class="$style.rowDetail">
+          <td :colspan="propList.length" style="padding:0px;cursor: default;">
+            <div :id="'rowDetail_' + g_index.toString() + '_' + _uid.toString()" :class="$style.rowDetail">
               <slot name="rowToggle" :index="g_index"></slot>
             </div>
           </td>
@@ -422,14 +422,15 @@ export default {
 
       let toggle_index = group_index ? group_index:row_index
 
-      if (document.getElementsByClassName('rowDetail')[toggle_index].style.display === 'block') {
-        document.getElementsByClassName('rowDetail')[toggle_index].style.display = 'none'
+      if (document.getElementById('rowDetail_' + toggle_index.toString() + '_' + this._uid.toString()).style.display === 'block') {
+        document.getElementById('rowDetail_' + toggle_index.toString() + '_' + this._uid.toString()).style.display = 'none'
       }
       else {
         if (this.lastToggled !== null) {
-          document.getElementsByClassName('rowDetail')[this.lastToggled].style.display = 'none'
+          document.getElementById('rowDetail_' + this.lastToggled.toString() + '_' + this._uid.toString()).style.display = 'none'
         }
-        document.getElementsByClassName('rowDetail')[toggle_index].style.display = 'block'
+        document.getElementById('rowDetail_' + toggle_index.toString() + '_' + this._uid.toString()).style.display = 'block'
+        
         this.lastToggled = toggle_index
       }
     },
