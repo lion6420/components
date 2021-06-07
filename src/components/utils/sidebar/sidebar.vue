@@ -93,6 +93,8 @@ export default {
   bottom: 0px;
   transition: max-width 0.3s linear;
   background-color: var(--sidebar-bg-color);
+  border-top: 1px #d3d3d3 solid;
+  border-bottom: 1px #d3d3d3 solid;
 }
 @media screen and (max-width: 700px) {
   .sidebar {

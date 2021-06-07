@@ -1,9 +1,14 @@
 <template>
-  <div :class="$style.wrapper" :id="'dropdown-item_' + _uid.toString()" :style="{width: width.toString() + 'px'}">
+  <div :class="$style.wrapper" :id="'dropdown-item_' + _uid.toString()"
+    :style="{
+      width: width.toString() + 'px',
+      'border-top': level_first ? '1px #d3d3d3 solid':'',
+      'border-bottom': level_last ? '1px #d3d3d3 solid':'',
+    }">
     <div
       :class="$style.baseBtn"
       @click="operateItem"
-      :style="[itemStyle, {height: height.toString() + 'px', color: active?'#fff':'', 'font-weight':active?'bold':''}]">
+      :style="[itemStyle, {height: height.toString() + 'px', 'font-weight':active?'bold':''}]">
       <span :class="[$style.baseBtn_icon, icon.class]" v-if="Object.keys(icon).length">{{icon.label}}</span>
       <div :class="$style.baseBtn_label"><span style="position:relative;top:12px">{{label}}</span></div>
       <!--expand icon-->
@@ -17,7 +22,7 @@
         :class="$style.expandBtn"
         v-for="(expandElement, exp_index) in expandList"
         :key="exp_index">
-        <sidebar-item :root="expandElement"></sidebar-item>
+        <sidebar-item :root="expandElement" :childOfDrop="true"></sidebar-item>
       </div>
     </div>
   </div>
@@ -76,6 +81,20 @@ export default {
         return 220
       }
     },
+    level_last: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    level_first: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    }
   },
   data() {
     return {
@@ -83,12 +102,14 @@ export default {
       if_expand: false,
       num_of_items: 0,
       height: 50,
+      maxHeight: 1,
     }
   },
   created() {
     this.num_of_items = this.expandList.length
     if (this.itemStyle.width && typeof(this.itemStyle.width) === 'number') this.width = this.itemStyle.width
     if (this.itemStyle.height && typeof(this.itemStyle.height) === 'number') this.height = this.itemStyle.height
+    this.maxHeight = this.calMaxHeight(this.expandList)
   },
   mounted() {
     this.activeCheck()
@@ -101,7 +122,7 @@ export default {
     expandItem() {
       const DOM = document.getElementById('expandArea_' + this._uid.toString())
       this.if_expand = true
-      DOM.style.maxHeight = (this.num_of_items*50).toString() + 'px'
+      DOM.style.maxHeight = (this.maxHeight*this.height).toString() + 'px'
     },
     closeItem() {
       const DOM = document.getElementById('expandArea_' + this._uid.toString())
@@ -114,6 +135,16 @@ export default {
       const urlPattern = new RegExp(this.activePath)
       this.active = urlPattern.test(path)
     },
+    calMaxHeight(expandList) {
+      let current_height = 1
+      for (let i=0; i<expandList.length; i++) {
+        if (expandList[i].type === 'dropdown') {
+          current_height += this.calMaxHeight(expandList[i].children)
+        }
+        else current_height++
+      }
+      return current_height
+    }
   },
   watch: {
     '$route'() {
@@ -132,9 +163,11 @@ export default {
 .wrapper {
   @include block(100%);
   cursor: pointer;
+  border-right: 1px #d3d3d3 solid;
+  border-left: 1px #d3d3d3 solid;
   // expand item
   .baseBtn {
-    @include block(100%);
+    @include block(100%, $sidebar-item-height);
     display: flex;
     font-size: 16px;
     color: var(--sidebar-text-color);

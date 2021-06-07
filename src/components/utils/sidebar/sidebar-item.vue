@@ -2,17 +2,20 @@
   <div :class="$style.wrapper" :id="'sidebar_item_' + _uid.toString()">
     <div v-if="root.type === 'level'">
       <level-item :label="root.label" :expandList="root.children" :itemStyle="root.style"
-        :activePath="root.activePath?root.activePath:''" :width="width">
+        :activePath="root.activePath?root.activePath:''" :width="width" :childOfDrop="childOfDrop"
+        :level_last="level_last" :level_first="level_first">
       </level-item>
     </div>
     <div v-else-if="root.type === 'dropdown'">
       <dropdown-item :label="root.label" :icon="root.icon" :expandList="root.children"
-        :itemStyle="root.style" :theme="theme" :activePath="root.activePath?root.activePath:''" :width="width">
+        :itemStyle="root.style" :theme="theme" :activePath="root.activePath?root.activePath:''" :width="width"
+        :level_last="level_last" :level_first="level_first">
       </dropdown-item>
     </div>
     <div v-else>
       <single-item :label="root.label" :icon="root.icon" :itemStyle="root.style" :link="root.link"
-        :theme="theme" :width="width">
+        :theme="theme" :width="width" :childOfDrop="childOfDrop"
+        :level_last="level_last" :level_first="level_first">
       </single-item>
     </div>
   </div>
@@ -45,6 +48,27 @@ export default {
     theme: {
       type: String,
       require: false,
+    },
+    childOfDrop: {
+      type: Boolean,
+      require: false,
+      deafult() {
+        return false
+      }
+    },
+    level_last: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    level_first: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
     }
   },
   data() {

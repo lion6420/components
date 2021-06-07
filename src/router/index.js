@@ -9,6 +9,7 @@ import DocTab from '@/components/tab/doc-tab'
 import DocProgress from '@/components/progress/doc-progress'
 import DocSpin from '@/components/spin/doc-spin'
 import About from '@/components/about'
+import Test from '@/components/test'
 
 
 const routes = [
@@ -60,6 +61,10 @@ const routes = [
     path: '/doc/spin',
     name: 'spin',
     component: DocSpin,
+  },
+  {
+    path: '/test',
+    component: Test
   }
 ]
 

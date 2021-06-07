@@ -1,5 +1,10 @@
 <template>
-  <div :class="$style.wrapper" :id="'single-item_' + _uid.toString()" :style="{width: width.toString() + 'px'}">
+  <div :class="$style.single_wrapper" :id="'single-item_' + _uid.toString()"
+    :style="{
+      width: width.toString() + 'px',
+      'border-top': level_first ? '1px #d3d3d3 solid':'',
+      'border-bottom': level_last ? '1px #d3d3d3 solid':'',
+    }">
     <div :class="$style.activebar"></div>
     <router-link :to="link" :class="$style.btn" :id="'item-btn_' + _uid.toString()"
       :style="[itemStyle]">
@@ -49,6 +54,27 @@ export default {
     theme: {
       type: String,
       require: false,
+    },
+    childOfDrop: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    level_last: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
+    },
+    level_first: {
+      type: Boolean,
+      require: false,
+      default() {
+        return false
+      }
     }
   },
   data() {
@@ -59,6 +85,7 @@ export default {
   },
   mounted() {
     this.activeCheck()
+    this.check_childOfDrop()
   },
   methods: {
     activeCheck() {
@@ -82,6 +109,12 @@ export default {
         htmlElement.setAttribute('sidebar-active', 'inactive')
       }
     },
+
+    //style
+    check_childOfDrop() {
+      let DOM = document.getElementById('single-item_' + this._uid.toString())
+      if (this.childOfDrop) DOM.setAttribute('child-of-drop', 'true')
+    }
   },
   watch: {
     "$route.path": function() {
@@ -94,11 +127,13 @@ export default {
 <style lang="scss" module>
 @import '../common/general.scss';
 @import './sidebar-style.scss';
-.wrapper {
+.single_wrapper {
   @include block(220px, $sidebar-item-height);
   display: flex;
-  background-color: transparent;
+  background-color: var(--sidebar-bg-color);
   cursor: pointer;
+  border-right: 1px #d3d3d3 solid;
+  border-left: 1px #d3d3d3 solid;
   .activebar {
     @include block(4px, $sidebar-item-height);
     background-color: var(--sidebar-active-bar);
@@ -122,8 +157,10 @@ export default {
     }
   }
 }
-.wrapper:hover {
+.single_wrapper:hover {
   background-color: var(--sidebar-bg-color-hover);
-  color: var(--sidebar-text-color-hover);
+  .btn {
+    color: var(--sidebar-text-color-hover);
+  }
 }
 </style>

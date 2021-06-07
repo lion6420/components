@@ -1,7 +1,6 @@
 <template>
-  <div :class="$style.wrapper">
+  <div :class="$style.wrapper" style="margin-top: 100px">
     <sidebar :class="$style.sidebar_dark" :menu="menu" theme="dark" :width="220"></sidebar>
-    <sidebar style="margin-left: 250px" :class="$style.sidebar_light" :menu="menu" :width="220"></sidebar>
   </div>
 </template>
 
@@ -22,13 +21,20 @@ export default {
           },
           children: [
             {
-              type: 'level',
+              type: 'dropdown',
               label: 'Sidebar 側邊欄',
               icon: {
                 class: 'fas fa-edit'
               },
-              activePath: '/doc/sidebar',
+              link: '/doc/sidebar',
               children: [
+                {
+                  label: 'Sidebar 側邊欄',
+                  icon: {
+                    class: 'fas fa-edit'
+                  },
+                  link: '/doc/sidebar'
+                },
                 {
                   label: 'OptionA-2',
                   icon: {
