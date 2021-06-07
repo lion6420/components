@@ -70,8 +70,8 @@
 
 # 開發項目作品
 
-### 倉庫管理系統 (http://jcchen.csie.org:8401/warehouse/)
-### 組件庫 (http://jcchen.csie.org:8401/components/)
+### 倉庫管理系統 (https://lion6420.github.io/warehouse/)
+### 組件庫 (https://lion6420.github.io/components/)
 
 ---
 # 學歷
